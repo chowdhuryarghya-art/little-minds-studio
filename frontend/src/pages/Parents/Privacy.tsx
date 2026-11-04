@@ -16,10 +16,13 @@ export default function Privacy() {
       <h2>What we collect</h2>
       <p>
         At present the site does not collect personal information, does not set tracking
-        cookies, and does not show advertising. Games run in your browser. Nothing a child colors
-        or answers is sent to us. Coloring progress and drawings are saved only in this
-        device&apos;s browser storage so a child can come back to them; clearing site data
-        removes them.
+        cookies, and does not show advertising. Most activities run in your browser. Nothing a
+        child colors or answers is sent to us. Coloring progress and drawings are saved only in
+        this device&apos;s browser storage so a child can come back to them; clearing site data
+        removes them. English, Hindi, and Bengali word lookups may send the requested word to
+        third-party dictionary or translation services. Bengali listening may request audio from
+        an external speech service. These services may process requests under their own privacy
+        policies.
       </p>
 
       <h2>What we do not do</h2>
@@ -37,11 +40,10 @@ export default function Privacy() {
 
       <h2>Contact</h2>
       <p>
-        Parents, guardians, and teachers may contact us from the About and contact page. Its
-        feedback form opens the visitor&apos;s email app; it does not send form data to this
-        website. If an email is sent, the message and the sender&apos;s email address are received
-        and stored in our email inbox so we can respond. Please do not include a child&apos;s
-        personal information.
+        Parents, guardians, and teachers may email us using the address on the About and contact
+        page. The email link opens your email app; this website does not receive or store the
+        message. If you send an email, its contents and your email address are received in our
+        inbox so we can respond. Please do not include a child&apos;s personal information.
       </p>
     </section>
   )

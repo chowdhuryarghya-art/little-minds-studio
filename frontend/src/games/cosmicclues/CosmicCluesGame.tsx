@@ -1,20 +1,24 @@
 import { useState } from 'react'
-import { createCosmicPuzzle, findPossibleSectors } from './cosmicClues.ts'
-import type { CosmicPuzzle } from './cosmicClues.ts'
+import { COSMIC_DIFFICULTIES, createCosmicPuzzle, findPossibleSectors } from './cosmicClues.ts'
+import type { CosmicDifficulty, CosmicPuzzle } from './cosmicClues.ts'
 
 export default function CosmicCluesGame() {
-  const [puzzle, setPuzzle] = useState<CosmicPuzzle>(() => createCosmicPuzzle())
+  const [difficulty, setDifficulty] = useState<CosmicDifficulty>('easy')
+  const [puzzle, setPuzzle] = useState<CosmicPuzzle>(() => createCosmicPuzzle('easy'))
   const [revealed, setRevealed] = useState(1)
   const [selected, setSelected] = useState<number | null>(null)
   const [attempts, setAttempts] = useState(0)
+  const [investigated, setInvestigated] = useState<number[]>([])
   const [solved, setSolved] = useState(false)
   const [status, setStatus] = useState('Read the clue, then choose a sector to investigate.')
 
-  const startNewPuzzle = () => {
-    setPuzzle(createCosmicPuzzle())
+  const startNewPuzzle = (nextDifficulty: CosmicDifficulty = difficulty) => {
+    setPuzzle(createCosmicPuzzle(nextDifficulty))
+    setDifficulty(nextDifficulty)
     setRevealed(1)
     setSelected(null)
     setAttempts(0)
+    setInvestigated([])
     setSolved(false)
     setStatus('Read the clue, then choose a sector to investigate.')
   }
@@ -28,7 +32,11 @@ export default function CosmicCluesGame() {
   const investigate = () => {
     if (solved) return
     if (selected === null) {
-      setStatus('Choose one of the eight sectors first.')
+      setStatus(`Choose one of the ${puzzle.gridSize * puzzle.gridSize} sectors first.`)
+      return
+    }
+    if (investigated.includes(selected)) {
+      setStatus(`Sector ${selected} has already been checked. Choose another sector.`)
       return
     }
     setAttempts((current) => current + 1)
@@ -36,14 +44,28 @@ export default function CosmicCluesGame() {
       setSolved(true)
       setStatus(`You found Planet X in sector ${selected}! Cosmic detective work!`)
     } else {
+      setInvestigated((current) => [...current, selected])
       setStatus(`No planet in sector ${selected}. Compare the clues and try again!`)
     }
   }
 
-  const possible = findPossibleSectors(puzzle.clues.slice(0, revealed))
+  const possible = findPossibleSectors(puzzle.clues.slice(0, revealed), puzzle.gridSize)
 
   return (
     <div className="cosmic-game">
+      <div className="chips cosmic-difficulties" role="group" aria-label="Map difficulty">
+        {COSMIC_DIFFICULTIES.map(({ id, label }) => (
+          <button
+            key={id}
+            type="button"
+            className={`chip${difficulty === id ? ' selected' : ''}`}
+            aria-pressed={difficulty === id}
+            onClick={() => startNewPuzzle(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <div className="cosmic-scoreboard">
         <span><strong>Clues</strong> {revealed} / {puzzle.clues.length}</span>
         <span><strong>Investigations</strong> {attempts}</span>
@@ -63,23 +85,29 @@ export default function CosmicCluesGame() {
           </p>
         )}
       </section>
-      <h2 className="center cosmic-map-title">Choose an orbit sector</h2>
-      <div className="cosmic-orbit" role="group" aria-label="Eight orbit sectors">
-        {Array.from({ length: 8 }, (_, index) => index + 1).map((sector) => {
+      <h2 className="center cosmic-map-title">Choose a map sector</h2>
+      <div
+        className="cosmic-orbit"
+        role="group"
+        aria-label={`${puzzle.gridSize} by ${puzzle.gridSize} map with ${puzzle.gridSize * puzzle.gridSize} sectors`}
+        style={{ gridTemplateColumns: `repeat(${puzzle.gridSize}, minmax(0, 1fr))` }}
+      >
+        {Array.from({ length: puzzle.gridSize * puzzle.gridSize }, (_, index) => index + 1).map((sector) => {
+          const hasBeenInvestigated = investigated.includes(sector)
           return (
             <button
               key={sector}
               type="button"
-              className={`cosmic-sector${selected === sector ? ' selected' : ''}${solved && sector === puzzle.targetSector ? ' discovered' : ''}`}
+              className={`cosmic-sector${selected === sector ? ' selected' : ''}${hasBeenInvestigated ? ' investigated' : ''}${solved && sector === puzzle.targetSector ? ' discovered' : ''}`}
               aria-pressed={selected === sector}
-              aria-label={`Sector ${sector}${solved && sector === puzzle.targetSector ? ', Planet X found' : ''}`}
+              aria-label={`Sector ${sector}${hasBeenInvestigated ? ', already investigated' : ''}${solved && sector === puzzle.targetSector ? ', Planet X found' : ''}`}
               onClick={() => {
-                if (!solved) {
+                if (!solved && !hasBeenInvestigated) {
                   setSelected(sector)
                   setStatus(`Sector ${sector} selected. Investigate when you are ready.`)
                 }
               }}
-              disabled={solved}
+              disabled={solved || hasBeenInvestigated}
             >
               <span className="cosmic-sector-number">{sector}</span>
               <span aria-hidden="true">{solved && sector === puzzle.targetSector ? '🪐' : '✦'}</span>
@@ -90,7 +118,7 @@ export default function CosmicCluesGame() {
       <p className="center cosmic-status" role="status" aria-live="polite">{status}</p>
       <div className="cosmic-actions">
         <button type="button" className="tool" onClick={investigate} disabled={solved}>Investigate sector</button>
-        <button type="button" className="tool" onClick={startNewPuzzle}>New mission</button>
+        <button type="button" className="tool" onClick={() => startNewPuzzle()}>New mission</button>
       </div>
       {solved && <p className="celebrate center">🚀 Mission complete!</p>}
       <p className="center muted cosmic-note">A fresh space-logic puzzle is made for every mission.</p>

@@ -8,8 +8,6 @@ import {
 } from './hindiData.ts'
 import { fetchHindiWord } from './hindiApi.ts'
 import { speakHindi } from './hindiSpeech.ts'
-import { validateHindiSentence } from './hindiSentenceValidator.ts'
-import type { HindiSentenceValidationResult } from './hindiSentenceValidator.ts'
 import HindiKeyboard from './HindiKeyboard.tsx'
 
 interface HindiGameProps {
@@ -33,7 +31,6 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
   const [showSearchKeyboard, setShowSearchKeyboard] = useState<boolean>(true)
   const [showSentenceKeyboard, setShowSentenceKeyboard] = useState<boolean>(false)
   const [userSentence, setUserSentence] = useState<string>('')
-  const [sentenceResult, setSentenceResult] = useState<HindiSentenceValidationResult | null>(null)
   const [isSpeakingSentence, setIsSpeakingSentence] = useState<boolean>(false)
   const [, startTransition] = useTransition()
 
@@ -44,7 +41,6 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
       setCurrentWordEntry(randomItem)
       setSearchError(null)
       setUserSentence('')
-      setSentenceResult(null)
     })
   }
 
@@ -61,7 +57,6 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
       setCurrentWordEntry(entry)
       setSearchInput('')
       setUserSentence('')
-      setSentenceResult(null)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : `शब्द "${trimmed}" नहीं मिला।`
       setSearchError(msg)
@@ -78,7 +73,6 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
       const entry = await fetchHindiWord(word)
       setCurrentWordEntry(entry)
       setUserSentence('')
-      setSentenceResult(null)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : `शब्द "${word}" नहीं मिला।`
       setSearchError(msg)
@@ -96,17 +90,6 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
     }
   }
 
-  const handleCheckSentence = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!userSentence.trim()) return
-    const result = validateHindiSentence(
-      userSentence,
-      currentWordEntry.word,
-      currentWordEntry.romanized
-    )
-    setSentenceResult(result)
-  }
-
   const handleSpeakSentence = async () => {
     if (!userSentence.trim()) return
     setIsSpeakingSentence(true)
@@ -118,11 +101,7 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
   }
 
   const handleInsertSampleSentence = () => {
-    const sample = currentWordEntry.exampleSentence.hindi
-    setUserSentence(sample)
-    setSentenceResult(
-      validateHindiSentence(sample, currentWordEntry.word, currentWordEntry.romanized)
-    )
+    setUserSentence(currentWordEntry.exampleSentence.hindi)
   }
 
   const curatedListForAge = getHindiWordsByAge(selectedAge === 'all' ? undefined : selectedAge)
@@ -350,30 +329,19 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
             का प्रयोग करके एक हिंदी वाक्य लिखें (Write a sentence using this word):
           </p>
 
-          <form className="sentence-builder-form" onSubmit={handleCheckSentence}>
+          <div className="sentence-builder-form">
             <div className="sentence-input-wrap">
               <textarea
                 className="sentence-textarea indic-font"
                 rows={3}
                 placeholder={`उदा. "${currentWordEntry.exampleSentence.hindi}" लिखें...`}
                 value={userSentence}
-                onChange={(e) => {
-                  setUserSentence(e.target.value)
-                  if (sentenceResult) setSentenceResult(null)
-                }}
+                onChange={(e) => setUserSentence(e.target.value)}
                 aria-label={`Write a Hindi sentence using ${currentWordEntry.word}`}
               />
             </div>
 
             <div className="sentence-builder-actions">
-              <button
-                type="submit"
-                className="btn btn-check-sentence"
-                disabled={!userSentence.trim()}
-              >
-                ✨ वाक्य जाँचें (Check Sentence)
-              </button>
-
               <button
                 type="button"
                 className={`btn btn-toggle-kb ${showSentenceKeyboard ? 'active' : ''}`}
@@ -412,48 +380,7 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
                 />
               </div>
             )}
-          </form>
-
-          {/* Validation Feedback */}
-          {sentenceResult && (
-            <div
-              className={`sentence-feedback-card ${
-                sentenceResult.isValid ? 'feedback-success' : 'feedback-tips'
-              }`}
-            >
-              <div className="feedback-banner">
-                <span className="feedback-badge-icon">
-                  {sentenceResult.isValid ? '🎉' : sentenceResult.score >= 75 ? '🌟' : '✏️'}
-                </span>
-                <div className="feedback-banner-text">
-                  <h4>{sentenceResult.encouragement}</h4>
-                  <span className="feedback-score">
-                    Sentence Score: <strong>{sentenceResult.score}%</strong>
-                  </span>
-                </div>
-              </div>
-
-              <div className="sentence-checklist">
-                <h5>वाक्य संरचना जाँच (Checklist):</h5>
-                <ul className="checklist-items">
-                  {sentenceResult.checks.map((item) => (
-                    <li
-                      key={item.id}
-                      className={`checklist-item ${item.passed ? 'passed' : 'needs-work'}`}
-                    >
-                      <span className="checklist-status-icon" aria-hidden="true">
-                        {item.passed ? '✅' : '⚠️'}
-                      </span>
-                      <div className="checklist-text-group">
-                        <span className="checklist-label">{item.label}</span>
-                        {item.tip && <p className="checklist-tip">{item.tip}</p>}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
+          </div>
         </aside>
       )}
     </div>

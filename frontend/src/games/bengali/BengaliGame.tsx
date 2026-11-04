@@ -8,8 +8,6 @@ import {
 } from './bengaliData.ts'
 import { fetchBengaliWord } from './bengaliApi.ts'
 import { speakBengali } from './bengaliSpeech.ts'
-import { validateBengaliSentence } from './bengaliSentenceValidator.ts'
-import type { BengaliSentenceValidationResult } from './bengaliSentenceValidator.ts'
 import BengaliKeyboard from './BengaliKeyboard.tsx'
 
 interface BengaliGameProps {
@@ -33,8 +31,8 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
   const [showSearchKeyboard, setShowSearchKeyboard] = useState<boolean>(true)
   const [showSentenceKeyboard, setShowSentenceKeyboard] = useState<boolean>(false)
   const [userSentence, setUserSentence] = useState<string>('')
-  const [sentenceResult, setSentenceResult] = useState<BengaliSentenceValidationResult | null>(null)
   const [isSpeakingSentence, setIsSpeakingSentence] = useState<boolean>(false)
+  const [speechError, setSpeechError] = useState<string | null>(null)
   const [, startTransition] = useTransition()
 
   const handlePickRandomWord = () => {
@@ -44,7 +42,7 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
       setCurrentWordEntry(randomItem)
       setSearchError(null)
       setUserSentence('')
-      setSentenceResult(null)
+      setSpeechError(null)
     })
   }
 
@@ -61,7 +59,7 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
       setCurrentWordEntry(entry)
       setSearchInput('')
       setUserSentence('')
-      setSentenceResult(null)
+      setSpeechError(null)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : `শব্দ "${trimmed}" পাওয়া যায়নি।`
       setSearchError(msg)
@@ -78,7 +76,7 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
       const entry = await fetchBengaliWord(word)
       setCurrentWordEntry(entry)
       setUserSentence('')
-      setSentenceResult(null)
+      setSpeechError(null)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : `শব্দ "${word}" পাওয়া যায়নি।`
       setSearchError(msg)
@@ -89,40 +87,45 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
 
   const handlePlayAudio = async () => {
     setIsPlayingAudio(true)
+    setSpeechError(null)
     try {
-      await speakBengali(currentWordEntry.word, currentWordEntry.romanized)
+      const usedApproximatePronunciation = await speakBengali(
+        currentWordEntry.word,
+        currentWordEntry.romanized,
+      )
+      if (usedApproximatePronunciation) {
+        setSpeechError('Using an approximate pronunciation because Bengali audio is unavailable.')
+      }
+    } catch (error) {
+      setSpeechError(error instanceof Error ? error.message : 'Bengali audio could not be played.')
     } finally {
-      setTimeout(() => setIsPlayingAudio(false), 900)
+      setIsPlayingAudio(false)
     }
-  }
-
-  const handleCheckSentence = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!userSentence.trim()) return
-    const result = validateBengaliSentence(
-      userSentence,
-      currentWordEntry.word,
-      currentWordEntry.romanized
-    )
-    setSentenceResult(result)
   }
 
   const handleSpeakSentence = async () => {
     if (!userSentence.trim()) return
     setIsSpeakingSentence(true)
+    setSpeechError(null)
     try {
-      await speakBengali(userSentence.trim())
+      const isSampleSentence = userSentence.trim() === currentWordEntry.exampleSentence.bengali
+      const usedApproximatePronunciation = await speakBengali(
+        userSentence.trim(),
+        isSampleSentence ? currentWordEntry.exampleSentence.romanized : undefined,
+      )
+      if (usedApproximatePronunciation) {
+        setSpeechError('Using an approximate pronunciation because Bengali audio is unavailable.')
+      }
+    } catch (error) {
+      setSpeechError(error instanceof Error ? error.message : 'Bengali audio could not be played.')
     } finally {
-      setTimeout(() => setIsSpeakingSentence(false), 1200)
+      setIsSpeakingSentence(false)
     }
   }
 
   const handleInsertSampleSentence = () => {
-    const sample = currentWordEntry.exampleSentence.bengali
-    setUserSentence(sample)
-    setSentenceResult(
-      validateBengaliSentence(sample, currentWordEntry.word, currentWordEntry.romanized)
-    )
+    setUserSentence(currentWordEntry.exampleSentence.bengali)
+    setSpeechError(null)
   }
 
   const curatedListForAge = getBengaliWordsByAge(selectedAge === 'all' ? undefined : selectedAge)
@@ -233,6 +236,7 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
               </button>
             </div>
           </header>
+          {speechError && <p className="center" role="status">{speechError}</p>}
 
           <div className="english-category-badge">
             <span>
@@ -350,7 +354,7 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
             ব্যবহার করে একটি বাংলা বাক্য তৈরি করুন (Write a sentence using this word):
           </p>
 
-          <form className="sentence-builder-form" onSubmit={handleCheckSentence}>
+          <div className="sentence-builder-form">
             <div className="sentence-input-wrap">
               <textarea
                 className="sentence-textarea indic-font"
@@ -359,21 +363,13 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
                 value={userSentence}
                 onChange={(e) => {
                   setUserSentence(e.target.value)
-                  if (sentenceResult) setSentenceResult(null)
+                  setSpeechError(null)
                 }}
                 aria-label={`Write a Bengali sentence using ${currentWordEntry.word}`}
               />
             </div>
 
             <div className="sentence-builder-actions">
-              <button
-                type="submit"
-                className="btn btn-check-sentence"
-                disabled={!userSentence.trim()}
-              >
-                ✨ বাক্য যাচাই করুন (Check Sentence)
-              </button>
-
               <button
                 type="button"
                 className={`btn btn-toggle-kb ${showSentenceKeyboard ? 'active' : ''}`}
@@ -401,7 +397,6 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
                 💡 উদাহরণ বাক্য দেখুন (Sample Sentence)
               </button>
             </div>
-
             {/* Sentence Builder Virtual Keyboard */}
             {showSentenceKeyboard && (
               <div className="sentence-keyboard-container">
@@ -412,48 +407,7 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
                 />
               </div>
             )}
-          </form>
-
-          {/* Validation Feedback */}
-          {sentenceResult && (
-            <div
-              className={`sentence-feedback-card ${
-                sentenceResult.isValid ? 'feedback-success' : 'feedback-tips'
-              }`}
-            >
-              <div className="feedback-banner">
-                <span className="feedback-badge-icon">
-                  {sentenceResult.isValid ? '🎉' : sentenceResult.score >= 75 ? '🌟' : '✏️'}
-                </span>
-                <div className="feedback-banner-text">
-                  <h4>{sentenceResult.encouragement}</h4>
-                  <span className="feedback-score">
-                    Sentence Score: <strong>{sentenceResult.score}%</strong>
-                  </span>
-                </div>
-              </div>
-
-              <div className="sentence-checklist">
-                <h5>বাক্য গঠনের নিয়মাবলী (Checklist):</h5>
-                <ul className="checklist-items">
-                  {sentenceResult.checks.map((item) => (
-                    <li
-                      key={item.id}
-                      className={`checklist-item ${item.passed ? 'passed' : 'needs-work'}`}
-                    >
-                      <span className="checklist-status-icon" aria-hidden="true">
-                        {item.passed ? '✅' : '⚠️'}
-                      </span>
-                      <div className="checklist-text-group">
-                        <span className="checklist-label">{item.label}</span>
-                        {item.tip && <p className="checklist-tip">{item.tip}</p>}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
+          </div>
         </aside>
       )}
     </div>

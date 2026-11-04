@@ -9,6 +9,10 @@ export default function LearningList() {
           <strong>Math Fun</strong>
           <span>Add, subtract, and multiply</span>
         </Link>
+        <Link to="/learning/science" className="tile" style={{ background: '#d8f0e2' }}>
+          <strong>🔬 Science Explorer</strong>
+          <span>Discover fun facts about animals, plants, space, the body, and Earth</span>
+        </Link>
         <Link to="/learning/english" className="tile" style={{ background: '#ffb703' }}>
           <strong>English Fun</strong>
           <span>Dictionary, phonetics, audio, and words</span>

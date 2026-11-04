@@ -26,6 +26,22 @@ export default function BrainGamesList() {
           <strong>🪐 Cosmic Clue Hunt</strong>
           <span>Use space clues to find the hidden planet</span>
         </Link>
+        <Link to="/brain-games/codebreaker" className="tile brain-tile" style={{ background: '#ffd8d8' }}>
+          <strong>🔐 Codebreaker</strong>
+          <span>Crack a secret color code using logic and clues</span>
+        </Link>
+        <Link to="/brain-games/pattern-detective" className="tile brain-tile" style={{ background: '#d8f0e2' }}>
+          <strong>🔎 Pattern Detective</strong>
+          <span>Spot what comes next in color, shape, and number patterns</span>
+        </Link>
+        <Link to="/brain-games/maze-with-a-twist" className="tile brain-tile" style={{ background: '#ffe6ad' }}>
+          <strong>🗝️ Maze With a Twist</strong>
+          <span>Find a key to unlock the gate on your way to the star</span>
+        </Link>
+        <Link to="/brain-games/what-comes-next" className="tile brain-tile" style={{ background: '#d9e7ff' }}>
+          <strong>🧠 Riddle &amp; Logic Challenge</strong>
+          <span>Solve fun riddles, brain teasers, and logic questions</span>
+        </Link>
         <Link to="/brain-games/logic-lab" className="tile brain-tile" style={{ background: '#c9e7f2' }}>
           <strong>🧩 Logic Lab · Ages 9–12</strong>
           <span>Arithmetic Grid, Block Slider, and a 3D Rubik’s Cube</span>

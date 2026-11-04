@@ -17,6 +17,7 @@ import MathPlay from './pages/Learning/MathPlay.tsx'
 import EnglishPlay from './pages/Learning/EnglishPlay.tsx'
 import HindiPlay from './pages/Learning/HindiPlay.tsx'
 import BengaliPlay from './pages/Learning/BengaliPlay.tsx'
+import ScienceExplorerPlay from './pages/Learning/ScienceExplorerPlay.tsx'
 import DrawingPlay from './pages/Drawing/DrawingPlay.tsx'
 import Parents from './pages/Parents/Parents.tsx'
 import Privacy from './pages/Parents/Privacy.tsx'
@@ -29,6 +30,10 @@ import WordBuilderPlay from './pages/BrainGames/WordBuilderPlay.tsx'
 import CosmicCluesPlay from './pages/BrainGames/CosmicCluesPlay.tsx'
 import EarlyGamesPlay from './pages/BrainGames/EarlyGamesPlay.tsx'
 import AdvancedGamesPlay from './pages/BrainGames/AdvancedGamesPlay.tsx'
+import CodebreakerPlay from './pages/BrainGames/CodebreakerPlay.tsx'
+import PatternDetectivePlay from './pages/BrainGames/PatternDetectivePlay.tsx'
+import MazeWithATwistPlay from './pages/BrainGames/MazeWithATwistPlay.tsx'
+import WhatComesNextPlay from './pages/BrainGames/WhatComesNextPlay.tsx'
 
 export default function App() {
   return (
@@ -65,12 +70,17 @@ export default function App() {
           <Route path="/learning/english" element={<EnglishPlay />} />
           <Route path="/learning/hindi" element={<HindiPlay />} />
           <Route path="/learning/bengali" element={<BengaliPlay />} />
+          <Route path="/learning/science" element={<ScienceExplorerPlay />} />
           <Route path="/drawing" element={<DrawingPlay />} />
           <Route path="/brain-games" element={<BrainGamesList />} />
           <Route path="/brain-games/chess" element={<ChessPractice />} />
           <Route path="/brain-games/sudoku" element={<SudokuPlay />} />
           <Route path="/brain-games/word-builder" element={<WordBuilderPlay />} />
           <Route path="/brain-games/cosmic-clues" element={<CosmicCluesPlay />} />
+          <Route path="/brain-games/codebreaker" element={<CodebreakerPlay />} />
+          <Route path="/brain-games/pattern-detective" element={<PatternDetectivePlay />} />
+          <Route path="/brain-games/maze-with-a-twist" element={<MazeWithATwistPlay />} />
+          <Route path="/brain-games/what-comes-next" element={<WhatComesNextPlay />} />
           <Route path="/brain-games/little-thinkers" element={<EarlyGamesPlay />} />
           <Route path="/brain-games/logic-lab" element={<AdvancedGamesPlay />} />
           <Route path="/parents" element={<Parents />} />

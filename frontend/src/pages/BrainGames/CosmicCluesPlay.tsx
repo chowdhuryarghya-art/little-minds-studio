@@ -8,7 +8,7 @@ export default function CosmicCluesPlay() {
         <Link className="back-link" to="/brain-games">← Brain Games</Link>
       </p>
       <h1 className="center">Cosmic Clue Hunt</h1>
-      <p className="center muted">Use logic and astronomy clues to find a hidden planet in the orbit.</p>
+      <p className="center muted">Use logic and astronomy clues to find a hidden planet on the star map.</p>
       <CosmicCluesGame />
     </section>
   )

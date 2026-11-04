@@ -1,54 +1,55 @@
-﻿# Little Minds Studio
+# Little Minds Studio
 
-Free kids learning platform (ages 2â€“12): **Play Â· Learn Â· Create**.
-See `little_minds_studio_exact_chat_roadmap.pdf` for the full business and development roadmap.
+Little Minds Studio is a free learning and creativity website for children ages 2–12. Children can play without creating an account; games do not contain purchases or ads.
 
-## Principles (from the roadmap)
-- Free to play, no child accounts, no purchases or ads in games.
-- Artwork and progress stay local; no personal data collected from children.
-- Game engine is client-side; static JSON/TS content first, no database needed for games.
+## What is included
 
-## Status â€“ Month 1 (Foundation)
-- [x] React + TypeScript + Vite app in `frontend/`
-- [x] Homepage, Kids Zone age selection, coloring list with age filter
-- [x] SVG coloring engine: palette, eraser, undo, start over, completion message
-- [x] Animal coloring (fish, cat, butterfly, turtle) and shape coloring (house, robot)
-- [x] Memory Match (3 / 6 / 8 pairs by age group) under Puzzle Games
-- [x] Math Fun under Learning Zone: 10-question rounds with age-adjusted difficulty; topic filters for addition, subtraction, multiplication, division, factors, money, fractions, time, geometry and decimals for ages 5–12, plus age-appropriate number sense and patterns for ages 2–5
-- [x] Brain Games: Chess Practice (legal moves, lightweight computer opponent, practice disclaimer); Sudoku (easy, medium and hard puzzles with unique solutions); Word Builder; Cosmic Clue Hunt; Little Thinkers for ages 2–4 (24 Odd One Out rounds, 20 size-sorting challenges, and 40 shadow pictures rotated in no-repeat batches); and Logic Lab for ages 9–12 (KenKen-style Arithmetic Grid, Block Slider, and a 3D interactive Rubik's Cube)
-- [x] Parents & Teachers page, draft privacy policy (needs legal review), About/contact page with adult feedback form (opens an email draft to the current project inbox)
-- [x] Tested on a real mobile phone
-- [x] Tested on a real tablet
-- [ ] Test in desktop browsers
-- [ ] Brand and domain
-- [x] Local artwork saving for coloring (autosaved in browser localStorage, never sent anywhere)
-- [x] Drawing Studio (free draw, 12 colors, 3 brush sizes, eraser, undo, clear; autosaved locally)
-- [x] Drawing Studio Fill by Color tool for enclosed areas, with undo and local autosave
-- [x] Math Fun expanded with age-adjusted addition, subtraction, multiplication, division, factors, money, fractions, time, geometry and decimals; topic filters mix selected topics into rounds
-- [x] Color by Number (all 6 coloring pages, numbered legend, wrong-number hints) under Coloring
-- [x] Mouse Maze (5x5 / 8x8 / 12x12 by age group, arrow keys or on-screen pad, shareable "Maze #") under Puzzle Games
-- [x] Mandala Maker: procedurally generated coloring / color-by-number pictures from a shareable "Picture #" (seeded random, no AI; see `frontend/src/lib/random.ts`, `frontend/src/games/mandala/`)
-- [x] Creature Maker: seeded creatures built from interchangeable parts (ears, tails, legs, spots, wings, antenna), coloring or color-by-number, shareable "Creature #" (`frontend/src/games/creature/`)
-- [x] Connect the Dots: seeded star / flower / heart / blob pictures with 8-12, 12-18 or 18-26 dots by age group, shareable "Picture #" (`frontend/src/games/connectdots/`)
-- [x] Word Search: seeded 6x6 / 8x8 / 10x10 grids with 4 / 6 / 8 words (emoji hints for the youngest, words in more directions for older kids; every word appears exactly once; 5 optional topics: Animals, Food, Space, Ocean, Weather & Nature), shareable "Puzzle #" (`frontend/src/games/wordsearch/`)
-- [x] Hand-drawn coloring and color-by-number pages expanded from 25 to 55, including 30 additional original templates across animals, fruit, nature and shapes
-- [ ] Remaining for Version 1.0: brand/domain, desktop-browser testing, and legal review of the draft privacy policy. The contact page currently publishes the owner's personal email and uses a mailto feedback form; consider replacing it with a dedicated project address before public launch. Real mobile phone and tablet testing are complete. The initial 50-template milestone is met; the roadmap's 100-activity target and ongoing monthly additions remain future content work.
+- **Coloring and Drawing:** SVG coloring pages, Color by Number, Mandala Maker, Creature Maker, and a free-draw studio.
+- **Puzzles:** Memory Match, Mouse Maze, Connect the Dots, and Word Search.
+- **Learning Zone:** Math Fun, Science Explorer, English Fun, Hindi Fun, and Bengali Fun.
+- **Science Explorer:** Five topics (animals, plants, space, the human body, and Earth), with 15 questions per topic, Easy/Medium/Hard levels, short learning cards, and explanations.
+- **Brain Games:** Chess Practice, Sudoku, Word Builder, Cosmic Clue Hunt (4×4, 5×5, and 6×6 levels), Codebreaker, Pattern Detective, Maze With a Twist, Riddle & Logic Challenge, Little Thinkers, and Logic Lab.
+- **Language practice:** Word searches, sample sentences, and speech playback. The games do not automatically grade user-written sentences.
 
-## Run
+Some language word lookups and Bengali speech playback use third-party online services. Coloring progress and drawings are stored in the browser on the device. The Privacy Policy is a draft and needs legal review before public launch.
+
+## Development
+
 Requires Node.js 20.19+ or 22.12+.
 
-```
+```powershell
 cd frontend
 npm install
-npm run dev     # http://127.0.0.1:5173
+npm run dev
 npm run build
 ```
 
-## Layout
+Vite serves the development site at `http://127.0.0.1:5173`.
+
+## Website deployment
+
+The website can be deployed independently of the native app projects. For Vercel, use `frontend` as the project root, `npm run build` as the build command, and `dist` as the output directory. Capacitor Android and iOS folders are not needed to build or deploy the website.
+
+## Native app projects
+
+Android and iOS Capacitor shells are included for possible future app releases; their presence does not mean the apps have been launched. After changing the frontend, build and sync the native projects:
+
+```powershell
+cd frontend
+npm run build
+npm run cap:sync
 ```
-frontend/src/
-  data/       age groups + coloring page definitions
-  games/      game engines (coloring, puzzles, learning, drawing and brain games)
-  pages/      route components
+
+Open the native projects with `npm run cap:android` or `npm run cap:ios`. Android development requires Android Studio and its SDK. iOS development and builds require macOS with Xcode. Test touch interactions, small-screen layouts, and device-specific features on real devices before release.
+
+## Project layout
+
+```text
+frontend/
+  src/
+    data/       Age groups and activity data
+    games/      Game and learning activity implementations
+    pages/      Route components
 ```
-`backend/`, `android/` (Capacitor) and `database/` are deferred until the web experience is validated.
+
+Capacitor projects are in `frontend/android/` and `frontend/ios/`. The backend and database directories are deferred; the current website is a client-side application.

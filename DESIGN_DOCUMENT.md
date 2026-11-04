@@ -1,14 +1,14 @@
 # Little Minds Studio — Comprehensive Architecture & Design Document
 
-> **Platform Overview:** Little Minds Studio is an ad-free, account-free, privacy-first web application designed for children aged 2–12. It provides interactive educational activities spanning Coloring, Puzzles, Brain Games, Drawing, Math, and English vocabulary exploration.
+> **Platform Overview:** Little Minds Studio is an ad-free web application that does not require accounts, designed for children aged 2–12. It provides Coloring, Puzzles, Brain Games, Drawing, Math, Science Explorer, and English, Hindi, and Bengali word exploration. Its privacy policy is a draft and requires legal review before public launch.
 
 ---
 
 ## 1. High-Level Architectural Principles
 
 1. **Client-Side First & Zero-Auth Friction:** Children and educators can access all features immediately without logging in, entering personal details, or paying.
-2. **Kid-Friendly Accessibility:** Touch-friendly targets (minimum 44px), high-contrast outlines, distinct color badges, phonetic transcriptions, native audio pronunciation, and responsive layouts across tablets, mobiles, and desktops.
-3. **Resilience & Offline Fallbacks:** Features like English Fun and Coloring work seamlessly even in offline or weak-network conditions through embedded seed datasets and curated fallbacks.
+2. **Kid-Friendly Accessibility:** Touch-friendly controls, high-contrast outlines, distinct color badges, phonetic transcriptions, audio options, and responsive layouts.
+3. **Resilience & Offline Fallbacks:** Coloring and curated learning content can be used without dictionary lookups; live dictionary, translation, and some speech features require network access.
 4. **Deterministic Procedural Generation:** Puzzles (Sudoku, Mazes, Arithmetic Grids, Mandalas, Creature generators) utilize deterministic pseudo-random seeds (PRNG) allowing any puzzle to be reproduced, shared, or printed.
 
 ---
@@ -73,7 +73,7 @@ little-minds-studio/
 
 #### 6. [`frontend/src/App.tsx`](frontend/src/App.tsx:1)
 - **What is done:** Hosts the global responsive site header (`brand`, navigation links), main `<Routes>` routing switchboard, and privacy-respecting site footer.
-- **How:** Declares routes for Home, KidsZone, Coloring (Standard, Mandala, Creature, Color-by-number), Puzzles (Memory, Maze, Connect Dots, Word Search), Learning (Math Fun, English Fun), Brain Games (Chess, Sudoku, Word Builder, Cosmic Clues, Little Thinkers, Logic Lab), Drawing Studio, and Parents/About/Privacy pages.
+- **How:** Declares routes for Home, Kids Zone, Coloring (standard, Mandala, Creature Maker, Color by Number), Puzzles (Memory Match, Maze, Connect the Dots, Word Search), Learning (Math Fun, Science Explorer, English, Hindi, Bengali), Brain Games (Chess Practice, Sudoku, Word Builder, Cosmic Clue Hunt, Codebreaker, Pattern Detective, Maze With a Twist, Riddle & Logic Challenge, Little Thinkers, Logic Lab), Drawing Studio, and Parents/About/Privacy pages.
 - **Why:** Provides a single, clean navigation hierarchy across all ages and game categories.
 
 #### 7. [`frontend/src/styles.css`](frontend/src/styles.css:1)
@@ -124,10 +124,10 @@ little-minds-studio/
 
 ---
 
-### E. Learning Zone (Math Fun & English Fun)
+### E. Learning Zone (Math, Science & Language)
 
 #### 14. [`frontend/src/pages/Learning/LearningList.tsx`](frontend/src/pages/Learning/LearningList.tsx:1)
-- **What is done:** Landing hub for the Learning Zone showcasing tiles for **Math Fun** and **English Fun**.
+- **What is done:** Landing hub for Math Fun, Science Explorer, English Fun, Hindi Fun, and Bengali Fun.
 - **How:** Grid of accessible cards with vivid category gradients and descriptive blurbs.
 - **Why:** Easy entry point for curriculum-aligned foundational skill building.
 
@@ -141,6 +141,11 @@ little-minds-studio/
 - **How:** Pure state machine calculating correct answers, generating realistic distractor options, and tracking progress stars.
 - **Why:** Reinforces mental math in a gamified, low-stress environment.
 
+#### Science Explorer — [`frontend/src/games/science/ScienceExplorerGame.tsx`](frontend/src/games/science/ScienceExplorerGame.tsx:1)
+- **What is done:** Topic-based science learning and quiz activity covering animals, plants, space, the human body, and Earth.
+- **How:** Each topic has 15 authored questions, three difficulty levels, and three short learning cards. Quiz rounds contain five questions and explain the answer with a related fact.
+- **Why:** Combines short readings with age-adjustable knowledge checks.
+
 #### 17. [`frontend/src/games/english/englishTypes.ts`](frontend/src/games/english/englishTypes.ts:1)
 - **What is done:** TypeScript interface definitions for English vocabulary entries:
   - `WordEntry`, `DictionaryMeaning`, `DictionaryDefinition`, `DictionaryPhonetic`, and `CuratedWord`.
@@ -150,31 +155,20 @@ little-minds-studio/
 #### 18. [`frontend/src/games/english/wordBank.ts`](frontend/src/games/english/wordBank.ts:1)
 - **What is done:** Rich, curated starter word repository organized across age groups (`explorers`, `curious`, `creative`) with offline fallback definitions, phonetic data, example sentences, synonyms, and kid-safe fun facts.
 - **How:** Exports `CURATED_WORDS`, `getCuratedWordsByAge()`, and `getRandomCuratedWord()`.
-- **Why:** Guarantees instant, safe, kid-appropriate random word discovery and resilient offline operation.
+- **Why:** Provides age-grouped word suggestions and locally authored starter data when a curated word is selected.
 
 #### 19. [`frontend/src/games/english/dictionaryApi.ts`](frontend/src/games/english/dictionaryApi.ts:1)
 - **What is done:** Dual-engine dictionary client integrating the open **Free Dictionary API** (`api.dictionaryapi.dev`) and the **Datamuse Lexical API** (`api.datamuse.com`), plus audio speech synthesis.
 - **How:**
   - Primary lookup queries Free Dictionary API for full phonetic breakdowns, audio MP3 recordings, and etymology.
   - Secondary fallback automatically queries Datamuse if the primary endpoint times out, 404s, or encounters network hiccups, parsing parts of speech, definitions, synonyms, and antonyms.
-  - Tertiary fallback gracefully serves curated offline dictionary records.
+  - Curated words with fallback data are served locally; other lookups depend on the external services being available.
   - Implements in-memory session caching (`Map<string, WordEntry>`) and safe timeout handling.
   - Provides dual audio playback: native dictionary recorded MP3 or browser `window.speechSynthesis` (Web Speech API) calibrated at a gentle rate (0.85x) for kids.
-- **Why:** Delivers robust, zero-failure open dictionary search without requiring API keys or subscriptions.
+- **Why:** Provides dictionary lookup without requiring app-managed API keys; network availability and third-party service behavior can affect results.
 
 #### 20. [`frontend/src/games/english/sentenceValidator.ts`](frontend/src/games/english/sentenceValidator.ts:1)
-- **What is done:** Deterministic, 100% rule-based (Zero-AI) grammar, agreement, and semantic plausibility validator for children.
-- **How:**
-  - Evaluates sentences across rigorous deterministic criteria:
-    1. Target word/inflection presence (`adventure`, `adventures`, `jumped`, etc.).
-    2. Mechanics: Initial uppercase capitalization and terminal punctuation (`. ! ?`).
-    3. Article agreement (`a` vs `an` before vowel/consonant sounds).
-    4. Subject-verb concord (detects elementary agreement mismatches like *"he were"*, *"they is"*, *"I are"*).
-    5. Natural determiner phrasing (flags bare singular countable nouns like *"Adventure was..."* vs *"The adventure was..."*).
-    6. Rhetorical / semantic category compatibility (detects incongruous linkages to literary terms like *"oxymoron"*, *"paradox"*, *"palindrome"* without qualifying phrases).
-    7. Clean spacing and duplicate word filtering.
-  - Returns a percentage score (0–100%), constructive checklist feedback with specific tips, and encouraging badges.
-- **Why:** Enables instant, private, offline-safe sentence feedback without requiring LLMs, external AI APIs, or user data tracking.
+- **Status:** Legacy validator module; it is not used by the current English game interface. Sentence checking was removed because fixed rules cannot reliably assess children's writing.
 
 #### 21. [`frontend/src/games/english/EnglishGame.tsx`](frontend/src/games/english/EnglishGame.tsx:1)
 - **What is done:** Interactive English Fun game component featuring:
@@ -185,7 +179,7 @@ little-minds-studio/
   - Example sentences in highlighted quotes
   - Clickable Synonyms and Antonyms tags (clicking any word immediately explores it)
   - Word Origin / Etymology card & Fun Kid Fact box
-  - Interactive **Word Builder Challenge** with child sentence input, "✨ Check Sentence" rule verification, score breakdown, and "🔊 Listen to Sentence" speech synthesizer.
+  - **Word Builder Challenge** with child sentence input, sample-sentence inspiration, and optional speech playback.
 - **How:** React state hooks, transition hooks for smooth re-rendering, error handling, and accessible ARIA attributes.
 - **Why:** Transforms abstract dictionary lookups into an engaging, multi-sensory word exploration adventure.
 
@@ -194,23 +188,23 @@ little-minds-studio/
 - **How:** Renders breadcrumb back links, age chips, and `<EnglishGame />`.
 - **Why:** Fits seamlessly into the Little Minds Studio navigation framework.
 
-#### 23. [`frontend/src/games/hindi/hindiTypes.ts`](frontend/src/games/hindi/hindiTypes.ts:1), [`hindiData.ts`](frontend/src/games/hindi/hindiData.ts:1), [`hindiApi.ts`](frontend/src/games/hindi/hindiApi.ts:1), [`hindiSpeech.ts`](frontend/src/games/hindi/hindiSpeech.ts:1), [`hindiSentenceValidator.ts`](frontend/src/games/hindi/hindiSentenceValidator.ts:1), & [`HindiKeyboard.tsx`](frontend/src/games/hindi/HindiKeyboard.tsx:1)
-- **What is done:** Full Hindi language dataset and domain engine with live open dictionary lookup (Wiktionary REST API + MyMemory translation), Devanagari script, Romanized transliteration, Hindi & English meanings, parts of speech (संज्ञा, क्रिया, विशेषण), synonyms (समानार्थी), antonyms (विलोम), native audio speech synthesis (`hi-IN`), deterministic Hindi SOV sentence verification, and an on-screen Devanagari virtual keyboard.
+#### 23. [`frontend/src/games/hindi/hindiTypes.ts`](frontend/src/games/hindi/hindiTypes.ts:1), [`hindiData.ts`](frontend/src/games/hindi/hindiData.ts:1), [`hindiApi.ts`](frontend/src/games/hindi/hindiApi.ts:1), [`hindiSpeech.ts`](frontend/src/games/hindi/hindiSpeech.ts:1), and [`HindiKeyboard.tsx`](frontend/src/games/hindi/HindiKeyboard.tsx:1)
+- **What is done:** Hindi learning with curated vocabulary, optional Wiktionary and MyMemory lookups for other words, Devanagari script, Romanized transliteration, Hindi and English meanings, sample sentences, speech playback, and an on-screen Devanagari keyboard. A legacy sentence-validator module remains in the source but is not used by the game interface.
 - **How:** Queries curated datasets and live open dictionary APIs with automatic transliteration, caching, and fallback.
 - **Why:** Allows children to search ANY Hindi word (e.g. *कागज़*, *किताब*, *सूरज*) directly with on-screen keyboard support.
 
 #### 24. [`frontend/src/games/hindi/HindiGame.tsx`](frontend/src/games/hindi/HindiGame.tsx:1) & [`frontend/src/pages/Learning/HindiPlay.tsx`](frontend/src/pages/Learning/HindiPlay.tsx:1)
-- **What is done:** Interactive Hindi Fun game component and page view (`/learning/hindi`) featuring live dictionary lookup, on-screen Devanagari virtual keyboard, Surprise Word picker, voice pronunciation, and Hindi sentence challenge.
+- **What is done:** Interactive Hindi Fun view (`/learning/hindi`) featuring curated and searched words, an on-screen Devanagari keyboard, Surprise Word picker, voice pronunciation, sentence composition, and sample-sentence inspiration. It does not provide automatic sentence checking.
 - **How:** React state management and responsive Indic typography layout.
 - **Why:** Accessible, welcoming multilingual learning experience.
 
-#### 25. [`frontend/src/games/bengali/bengaliTypes.ts`](frontend/src/games/bengali/bengaliTypes.ts:1), [`bengaliData.ts`](frontend/src/games/bengali/bengaliData.ts:1), [`bengaliApi.ts`](frontend/src/games/bengali/bengaliApi.ts:1), [`bengaliSpeech.ts`](frontend/src/games/bengali/bengaliSpeech.ts:1), [`bengaliSentenceValidator.ts`](frontend/src/games/bengali/bengaliSentenceValidator.ts:1), & [`BengaliKeyboard.tsx`](frontend/src/games/bengali/BengaliKeyboard.tsx:1)
-- **What is done:** Full Bengali language dataset and domain engine with live open dictionary lookup (Wiktionary REST API + MyMemory translation), Bengali script, Romanized transliteration, Bengali & English meanings, parts of speech (বিশেষ্য, ক্রিয়া, বিশেষণ), synonyms (সমার্থক), antonyms (বিপরীতার্থক), native audio speech synthesis (`bn-IN`/`bn-BD`), deterministic Bengali SOV sentence verification, and an on-screen Bengali script virtual keyboard.
+#### 25. [`frontend/src/games/bengali/bengaliTypes.ts`](frontend/src/games/bengali/bengaliTypes.ts:1), [`bengaliData.ts`](frontend/src/games/bengali/bengaliData.ts:1), [`bengaliApi.ts`](frontend/src/games/bengali/bengaliApi.ts:1), [`bengaliSpeech.ts`](frontend/src/games/bengali/bengaliSpeech.ts:1), and [`BengaliKeyboard.tsx`](frontend/src/games/bengali/BengaliKeyboard.tsx:1)
+- **What is done:** Bengali learning with curated vocabulary, optional Wiktionary and MyMemory lookups for other words, Bengali script, Romanized transliteration, Bengali and English meanings, sample sentences, and an on-screen Bengali keyboard. Listening tries online Bengali audio, then an installed Bengali system voice; if neither is available it can use an approximate romanized fallback spoken with a Hindi voice. A legacy sentence-validator module remains in the source but is not used by the game interface.
 - **How:** Queries curated datasets and live open dictionary APIs with automatic transliteration, caching, and fallback.
 - **Why:** Allows children to search ANY Bengali word (e.g. *কাগজ*, *গাছ*, *বই*, *সূর্য*) directly with on-screen keyboard support.
 
 #### 26. [`frontend/src/games/bengali/BengaliGame.tsx`](frontend/src/games/bengali/BengaliGame.tsx:1) & [`frontend/src/pages/Learning/BengaliPlay.tsx`](frontend/src/pages/Learning/BengaliPlay.tsx:1)
-- **What is done:** Interactive Bengali Fun game component and page view (`/learning/bengali`) featuring live dictionary lookup, on-screen Bengali virtual keyboard, Surprise Word picker, voice pronunciation, and Bengali sentence challenge.
+- **What is done:** Interactive Bengali Fun view (`/learning/bengali`) with curated and searched words, an on-screen Bengali keyboard, Surprise Word picker, voice playback, sentence composition, and sample-sentence inspiration. It does not provide automatic sentence checking.
 - **How:** React state management with Indic typography.
 - **Why:** Encourages joyful, interactive Bengali language exploration.
 
@@ -278,7 +272,7 @@ little-minds-studio/
 
 #### 32. [`frontend/src/pages/BrainGames/BrainGamesList.tsx`](frontend/src/pages/BrainGames/BrainGamesList.tsx:1)
 - **What is done:** Category portal for high-level logic, deduction, and tactical strategy games.
-- **How:** Routes to Chess Practice, Sudoku, Word Builder, Cosmic Clues, Little Thinkers, and Logic Lab.
+- **How:** Routes to Little Thinkers, Chess Practice, Sudoku, Word Builder, Cosmic Clue Hunt, Codebreaker, Pattern Detective, Maze With a Twist, Riddle & Logic Challenge, and Logic Lab.
 - **Why:** Dedicated hub for deeper cognitive challenges.
 
 #### 33. [`frontend/src/games/chess/ChessGame.tsx`](frontend/src/games/chess/ChessGame.tsx:1) & [`frontend/src/pages/BrainGames/ChessPractice.tsx`](frontend/src/pages/BrainGames/ChessPractice.tsx:1)
@@ -297,9 +291,15 @@ little-minds-studio/
 - **Why:** Expands vocabulary and phonemic awareness.
 
 #### 36. [`frontend/src/games/cosmicclues/CosmicCluesGame.tsx`](frontend/src/games/cosmicclues/CosmicCluesGame.tsx:1) & [`frontend/src/games/cosmicclues/cosmicClues.ts`](frontend/src/games/cosmicclues/cosmicClues.ts:1)
-- **What is done:** Space-themed deduction puzzle where kids use relational clues (e.g. "Planet Alpha is next to Beta", "Gamma is not in Sector 3") to locate hidden space stations.
-- **How:** Generates solvable relational logic constraints with interactive planetary grid verification.
+- **What is done:** Space-themed deduction puzzle where children use clues to locate a hidden planet in a grid.
+- **How:** Offers Easy (4×4), Medium (5×5), and Hard (6×6) boards with generated clues and interactive investigation.
 - **Why:** Fosters logical deduction and hypothesis testing.
+
+#### Additional Brain Games
+- **Codebreaker:** Deduce a hidden color sequence from feedback on guesses.
+- **Pattern Detective:** Find the missing or next item in shape, color, and number patterns.
+- **Maze With a Twist:** Navigate a maze, collect a key, and unlock the gate to reach the goal.
+- **Riddle & Logic Challenge:** Solve riddles, brain teasers, and logic questions. The route remains `/brain-games/what-comes-next`.
 
 #### 37. [`frontend/src/games/earlybrain/EarlyBrainGames.tsx`](frontend/src/games/earlybrain/EarlyBrainGames.tsx:1) & [`frontend/src/games/earlybrain/earlyBrainData.ts`](frontend/src/games/earlybrain/earlyBrainData.ts:1)
 - **What is done:** Cognitive games for toddlers and preschoolers (Odd One Out, Shadow Matching, Size Ordering).
@@ -345,8 +345,8 @@ little-minds-studio/
 - **Why:** Direct, age-appropriate content curation.
 
 #### 44. [`frontend/src/pages/Parents/Parents.tsx`](frontend/src/pages/Parents/Parents.tsx:1), [`frontend/src/pages/Parents/Privacy.tsx`](frontend/src/pages/Parents/Privacy.tsx:1), & [`frontend/src/pages/Parents/About.tsx`](frontend/src/pages/Parents/About.tsx:1)
-- **What is done:** Educator & parent resources explaining the educational pedagogy, privacy commitments (COPPA/GDPR compliance, zero tracking cookies, zero ads), and contact info.
-- **How:** Accessible, clean informational pages with feedback submission forms.
+- **What is done:** Parent and teacher information describing the current activity areas, broad age guidance, and privacy details. The privacy policy is marked as a draft for legal review and makes no compliance claim.
+- **How:** The Parents page links to Coloring and Drawing, Puzzles, Learning Zone, and Brain Games. The About page provides a direct email link; there is no feedback form.
 - **Why:** Builds trust with schools, teachers, and guardians.
 
 #### 45. [`frontend/src/pages/ComingSoon.tsx`](frontend/src/pages/ComingSoon.tsx:1)
@@ -358,6 +358,6 @@ little-minds-studio/
 
 ## 4. Verification and Quality Assurance
 
-- **Build Validation:** Production bundle compiled with `tsc && vite build` with 0 type errors.
-- **Cross-Platform Compatibility:** Tested for touch screens, mobile viewports, keyboard navigation, and high-DPI displays.
-- **Speech Synthesis:** Dual fallback architecture (Audio URL + Web Speech API) guarantees audio pronunciation in all modern browsers.
+- **Build Validation:** `npm run build` runs the TypeScript compiler and Vite production build. Run it before release.
+- **Cross-Platform Compatibility:** The application is responsive, but verify layouts, touch controls, keyboard navigation, and device-specific behavior on supported browsers and real devices before release.
+- **Speech Playback:** Availability and pronunciation depend on network access, browser capabilities, and installed system voices. Bengali may fall back to approximate romanized speech; audio playback is not guaranteed in every environment.

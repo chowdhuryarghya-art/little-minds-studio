@@ -3,8 +3,6 @@ import type { AgeGroupId } from '../../data/ageGroups.ts'
 import type { WordEntry, CuratedWord } from './englishTypes.ts'
 import { getRandomCuratedWord, getCuratedWordsByAge } from './wordBank.ts'
 import { fetchWordDefinition, speakWord } from './dictionaryApi.ts'
-import { validateSentenceFormation } from './sentenceValidator.ts'
-import type { SentenceValidationResult } from './sentenceValidator.ts'
 
 interface EnglishGameProps {
   initialAge?: AgeGroupId
@@ -21,7 +19,6 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
   const [searchInput, setSearchInput] = useState<string>('')
   const [activeTab, setActiveTab] = useState<number>(0)
   const [userSentence, setUserSentence] = useState<string>('')
-  const [sentenceResult, setSentenceResult] = useState<SentenceValidationResult | null>(null)
   const [isSpeakingSentence, setIsSpeakingSentence] = useState<boolean>(false)
   const [, startTransition] = useTransition()
 
@@ -32,7 +29,6 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
     setErrorMsg(null)
     setActiveTab(0)
     setUserSentence('')
-    setSentenceResult(null)
 
     fetchWordDefinition(currentWord)
       .then((data) => {
@@ -89,13 +85,6 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
     }
   }
 
-  const handleCheckSentence = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!wordData || !userSentence.trim()) return
-    const result = validateSentenceFormation(userSentence, wordData.word)
-    setSentenceResult(result)
-  }
-
   const handleSpeakSentence = async () => {
     if (!userSentence.trim()) return
     setIsSpeakingSentence(true)
@@ -108,7 +97,6 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
 
   const handleClearSentence = () => {
     setUserSentence('')
-    setSentenceResult(null)
   }
 
   const handleInsertSampleSentence = () => {
@@ -116,11 +104,9 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
     const firstExample = wordData.meanings[0]?.definitions.find((d) => d.example)?.example
     if (firstExample) {
       setUserSentence(firstExample)
-      setSentenceResult(validateSentenceFormation(firstExample, wordData.word))
     } else {
       const sample = `The ${wordData.word} is very interesting and fun to learn about.`
       setUserSentence(sample)
-      setSentenceResult(validateSentenceFormation(sample, wordData.word))
     }
   }
 
@@ -392,35 +378,22 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
           </div>
           <p>
             Write a complete sentence using the word{' '}
-            <strong className="challenge-highlight">"{wordData.word}"</strong>. Our smart checker will verify your punctuation, capitalization, and sentence formation!
+            <strong className="challenge-highlight">"{wordData.word}"</strong>.
           </p>
 
-          <form className="sentence-builder-form" onSubmit={handleCheckSentence}>
+          <div className="sentence-builder-form">
             <div className="sentence-input-wrap">
               <textarea
                 className="sentence-textarea"
                 rows={3}
                 placeholder={`Type your sentence here with "${wordData.word}" (e.g. "We saw a brilliant rainbow after the rain.")...`}
                 value={userSentence}
-                onChange={(e) => {
-                  setUserSentence(e.target.value)
-                  if (sentenceResult) {
-                    setSentenceResult(null)
-                  }
-                }}
+                onChange={(e) => setUserSentence(e.target.value)}
                 aria-label={`Write a sentence using the word ${wordData.word}`}
               />
             </div>
 
             <div className="sentence-builder-actions">
-              <button
-                type="submit"
-                className="btn btn-check-sentence"
-                disabled={!userSentence.trim()}
-              >
-                ✨ Check Sentence
-              </button>
-
               {userSentence.trim() && (
                 <button
                   type="button"
@@ -450,51 +423,6 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
                 </button>
               )}
             </div>
-          </form>
-
-          {/* Verification Results & Rule Checklist */}
-          {sentenceResult && (
-            <div
-              className={`sentence-feedback-card ${sentenceResult.isValid ? 'feedback-success' : 'feedback-tips'}`}
-            >
-              <div className="feedback-banner">
-                <span className="feedback-badge-icon">
-                  {sentenceResult.isValid ? '🎉' : sentenceResult.score >= 80 ? '🌟' : '✏️'}
-                </span>
-                <div className="feedback-banner-text">
-                  <h4>{sentenceResult.encouragement}</h4>
-                  <span className="feedback-score">
-                    Sentence Score: <strong>{sentenceResult.score}%</strong>
-                  </span>
-                </div>
-              </div>
-
-              <div className="sentence-checklist">
-                <h5>Sentence Formation Checklist:</h5>
-                <ul className="checklist-items">
-                  {sentenceResult.checks.map((item) => (
-                    <li
-                      key={item.id}
-                      className={`checklist-item ${item.passed ? 'passed' : 'needs-work'}`}
-                    >
-                      <span className="checklist-status-icon" aria-hidden="true">
-                        {item.passed ? '✅' : '⚠️'}
-                      </span>
-                      <div className="checklist-text-group">
-                        <span className="checklist-label">{item.label}</span>
-                        {item.tip && <p className="checklist-tip">{item.tip}</p>}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
-          <div className="challenge-tips">
-            <span>
-              💡 <strong>Writing Tip:</strong> A complete sentence starts with a capital letter, contains a subject and an action, and finishes with a period, exclamation mark, or question mark!
-            </span>
           </div>
         </aside>
       )}

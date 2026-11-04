@@ -25,9 +25,9 @@ export default function Home() {
           </Link>
         ))}
       </div>
-      <p className="center muted">
+      {/* <p className="center muted">
         <Link to="/parents">For Parents &amp; Teachers</Link>
-      </p>
+      </p> */}
     </section>
   )
 }
