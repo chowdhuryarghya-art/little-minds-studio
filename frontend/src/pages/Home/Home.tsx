@@ -4,6 +4,7 @@ const TILES = [
   { to: '/coloring', title: 'Coloring Games', sub: 'Explore and create', color: '#ffb703' },
   { to: '/puzzles', title: 'Puzzle Games', sub: 'Think and solve', color: '#4cc9f0' },
   { to: '/learning', title: 'Learning Zone', sub: 'Learn something new', color: '#52b788' },
+  { to: '/learning/early-years', title: 'Early Learning', sub: 'Letters, counting, stories & more · Ages 2–5', color: '#ffe6ad' },
   { to: '/brain-games', title: 'Brain Games', sub: 'Think, plan and solve', color: '#cdeccf' },
   { to: '/drawing', title: 'Drawing Studio', sub: 'Create your artwork', color: '#b388eb' },
 ]

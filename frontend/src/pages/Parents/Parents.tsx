@@ -21,6 +21,11 @@ export default function Parents() {
           problem-solving.
         </li>
         <li>
+          <Link to="/learning/early-years">Early Learning</Link>: first-letter word matching across the
+          alphabet, numbers 1–100, and no-repeat story, object-counting, and feelings activities for
+          ages 2–5.
+        </li>
+        <li>
           <Link to="/learning">Learning Zone</Link>: math practice, English vocabulary, Hindi and
           Bengali word exploration, and Science Explorer quizzes about animals, plants, space, the
           human body, and Earth. Science Explorer includes short learning cards, three quiz levels,

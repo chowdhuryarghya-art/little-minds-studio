@@ -18,6 +18,7 @@ import EnglishPlay from './pages/Learning/EnglishPlay.tsx'
 import HindiPlay from './pages/Learning/HindiPlay.tsx'
 import BengaliPlay from './pages/Learning/BengaliPlay.tsx'
 import ScienceExplorerPlay from './pages/Learning/ScienceExplorerPlay.tsx'
+import EarlyLearningPlay from './pages/Learning/EarlyLearningPlay.tsx'
 import DrawingPlay from './pages/Drawing/DrawingPlay.tsx'
 import Parents from './pages/Parents/Parents.tsx'
 import Privacy from './pages/Parents/Privacy.tsx'
@@ -66,6 +67,7 @@ export default function App() {
           <Route path="/puzzles/connect-dots" element={<ConnectDotsPlay />} />
           <Route path="/puzzles/word-search" element={<WordSearchPlay />} />
           <Route path="/learning" element={<LearningList />} />
+          <Route path="/learning/early-years" element={<EarlyLearningPlay />} />
           <Route path="/learning/math" element={<MathPlay />} />
           <Route path="/learning/english" element={<EnglishPlay />} />
           <Route path="/learning/hindi" element={<HindiPlay />} />

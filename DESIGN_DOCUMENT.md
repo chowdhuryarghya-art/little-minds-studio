@@ -168,7 +168,12 @@ little-minds-studio/
 - **Why:** Provides dictionary lookup without requiring app-managed API keys; network availability and third-party service behavior can affect results.
 
 #### 20. [`frontend/src/games/english/sentenceValidator.ts`](frontend/src/games/english/sentenceValidator.ts:1)
-- **Status:** Legacy validator module; it is not used by the current English game interface. Sentence checking was removed because fixed rules cannot reliably assess children's writing.
+- **Status:** Legacy validator module; it is not used by the current English game interface.
+
+#### 20a. [`frontend/src/games/english/languageToolApi.ts`](frontend/src/games/english/languageToolApi.ts:1)
+- **What is done:** Requests English (US) writing suggestions from LanguageTool's public check API when the user explicitly asks to check a sentence. Suggested replacements can be applied individually; no score or grade is assigned.
+- **Privacy:** The sentence is sent to LanguageTool only after the user activates the check button, and the interface discloses this before checking.
+- **How:** Sends a form-encoded request, validates response fields and suggestion offsets, and surfaces service errors to the user.
 
 #### 21. [`frontend/src/games/english/EnglishGame.tsx`](frontend/src/games/english/EnglishGame.tsx:1)
 - **What is done:** Interactive English Fun game component featuring:
@@ -179,7 +184,7 @@ little-minds-studio/
   - Example sentences in highlighted quotes
   - Clickable Synonyms and Antonyms tags (clicking any word immediately explores it)
   - Word Origin / Etymology card & Fun Kid Fact box
-  - **Word Builder Challenge** with child sentence input, sample-sentence inspiration, and optional speech playback.
+  - **Word Builder Challenge** with child sentence input, sample-sentence inspiration, optional speech playback, and on-demand LanguageTool suggestions.
 - **How:** React state hooks, transition hooks for smooth re-rendering, error handling, and accessible ARIA attributes.
 - **Why:** Transforms abstract dictionary lookups into an engaging, multi-sensory word exploration adventure.
 

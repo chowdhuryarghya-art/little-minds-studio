@@ -5,6 +5,10 @@ export default function LearningList() {
     <section className="page">
       <h1 className="hero-title">Learning Zone</h1>
       <div className="tile-grid three">
+        <Link to="/learning/early-years" className="tile" style={{ background: '#ffe6ad' }}>
+          <strong>Early Learning · Ages 2–5</strong>
+          <span>Letters and sounds, little stories, counting, tracing, and feelings</span>
+        </Link>
         <Link to="/learning/math" className="tile" style={{ background: '#52b788' }}>
           <strong>Math Fun</strong>
           <span>Add, subtract, and multiply</span>

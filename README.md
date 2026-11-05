@@ -7,11 +7,12 @@ Little Minds Studio is a free learning and creativity website for children ages 
 - **Coloring and Drawing:** SVG coloring pages, Color by Number, Mandala Maker, Creature Maker, and a free-draw studio.
 - **Puzzles:** Memory Match, Mouse Maze, Connect the Dots, and Word Search.
 - **Learning Zone:** Math Fun, Science Explorer, English Fun, Hindi Fun, and Bengali Fun.
+- **Early Learning (ages 2–5):** shuffled first-letter word matching, number names and recognition from 1–100, read-along stories with sentence-matched illustrated scenes, object-counting and feelings rounds that shuffle without repeating until their set is used, and pre-writing tracing.
 - **Science Explorer:** Five topics (animals, plants, space, the human body, and Earth), with 15 questions per topic, Easy/Medium/Hard levels, short learning cards, and explanations.
 - **Brain Games:** Chess Practice, Sudoku, Word Builder, Cosmic Clue Hunt (4×4, 5×5, and 6×6 levels), Codebreaker, Pattern Detective, Maze With a Twist, Riddle & Logic Challenge, Little Thinkers, and Logic Lab.
-- **Language practice:** Word searches, sample sentences, and speech playback. The games do not automatically grade user-written sentences.
+- **Language practice:** Word searches, sample sentences, and speech playback. English Word Builder can request writing suggestions from LanguageTool; it does not score or grade user-written sentences.
 
-Some language word lookups and Bengali speech playback use third-party online services. Coloring progress and drawings are stored in the browser on the device. The Privacy Policy is a draft and needs legal review before public launch.
+Some language word lookups, Bengali speech playback, and English sentence suggestions use third-party online services. Sentence text is sent to LanguageTool only when the user requests suggestions. Coloring progress and drawings are stored in the browser on the device. The Privacy Policy is a draft and needs legal review before public launch.
 
 ## Development
 
