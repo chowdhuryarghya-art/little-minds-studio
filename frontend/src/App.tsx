@@ -1,4 +1,6 @@
-import { Link, Route, Routes } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, Navigate, Route, Routes } from 'react-router-dom'
+import RouteEffects from './RouteEffects.tsx'
 import Home from './pages/Home/Home.tsx'
 import KidsZone from './pages/KidsZone/KidsZone.tsx'
 import ColoringList from './pages/Coloring/ColoringList.tsx'
@@ -37,18 +39,32 @@ import MazeWithATwistPlay from './pages/BrainGames/MazeWithATwistPlay.tsx'
 import WhatComesNextPlay from './pages/BrainGames/WhatComesNextPlay.tsx'
 
 export default function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const closeMenu = () => setIsMenuOpen(false)
+
   return (
     <>
+      <RouteEffects />
       <header className="site-header">
         <Link to="/" className="brand">
           Little Minds Studio
           <span className="tagline">Play · Learn · Create</span>
         </Link>
-        <nav aria-label="Main">
-          <Link to="/kids">Kids Zone</Link>
-          <Link to="/coloring">Coloring</Link>
-          <Link to="/brain-games">Brain Games</Link>
-          <Link to="/parents">For Parents &amp; Teachers</Link>
+        <button
+          type="button"
+          className="menu-toggle"
+          aria-expanded={isMenuOpen}
+          aria-controls="main-navigation"
+          aria-label={isMenuOpen ? 'Close main menu' : 'Open main menu'}
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          {isMenuOpen ? 'Close menu' : 'Menu'}
+        </button>
+        <nav id="main-navigation" className={isMenuOpen ? 'is-open' : ''} aria-label="Main">
+          <Link to="/kids" onClick={closeMenu}>Kids Zone</Link>
+          <Link to="/coloring" onClick={closeMenu}>Coloring</Link>
+          <Link to="/brain-games" onClick={closeMenu}>Brain Games</Link>
+          <Link to="/parents" onClick={closeMenu}>For Parents &amp; Teachers</Link>
         </nav>
       </header>
       <main>
@@ -82,7 +98,8 @@ export default function App() {
           <Route path="/brain-games/codebreaker" element={<CodebreakerPlay />} />
           <Route path="/brain-games/pattern-detective" element={<PatternDetectivePlay />} />
           <Route path="/brain-games/maze-with-a-twist" element={<MazeWithATwistPlay />} />
-          <Route path="/brain-games/what-comes-next" element={<WhatComesNextPlay />} />
+          <Route path="/brain-games/riddle-logic" element={<WhatComesNextPlay />} />
+          <Route path="/brain-games/what-comes-next" element={<Navigate to="/brain-games/riddle-logic" replace />} />
           <Route path="/brain-games/little-thinkers" element={<EarlyGamesPlay />} />
           <Route path="/brain-games/logic-lab" element={<AdvancedGamesPlay />} />
           <Route path="/parents" element={<Parents />} />

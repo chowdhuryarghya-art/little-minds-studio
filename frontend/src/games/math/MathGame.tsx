@@ -75,6 +75,9 @@ function Round({
             : `Nice try! The answer is ${question.answer}.`}
         </p>
       )}
+      {!answered && (
+        <p className="center muted" role="status">Choose an answer to continue.</p>
+      )}
       <p className="center">
         <button
           type="button"

@@ -3,8 +3,9 @@ export default function Privacy() {
     <section className="page narrow">
       <h1>Privacy Policy</h1>
       <p className="muted">
-        Draft for review. This text describes how the site currently works and must be reviewed
-        against India&apos;s DPDP Act and any other applicable law before public launch.
+        This page describes the site&apos;s current behavior in plain language. It is not legal
+        advice or a legal compliance assessment; obtain qualified review for India&apos;s DPDP Act
+        and other applicable requirements before relying on it.
       </p>
 
       <h2>Children</h2>
@@ -19,10 +20,13 @@ export default function Privacy() {
         cookies, and does not show advertising. Most activities run in your browser. Nothing a
         child colors or answers is sent to us. Coloring progress and drawings are saved only in
         this device&apos;s browser storage so a child can come back to them; clearing site data
-        removes them. English, Hindi, and Bengali word lookups may send the requested word to
-        third-party dictionary or translation services. Bengali listening may request audio from
-        an external speech service. These services may process requests under their own privacy
-        policies.
+        removes them. English, Hindi, and Bengali dictionary results come from word lists included
+        with the site; searches are not sent to dictionary or translation services. If a user asks
+        for English sentence suggestions, the sentence is sent to LanguageTool. Bengali
+        pronunciation may send the word or sentence to Google Translate&apos;s speech service when
+        the speaker control is used. Those providers may process requests under their own privacy
+        policies. Cloudflare hosts the site and may process technical request data needed to
+        deliver it.
       </p>
 
       <h2>What we do not do</h2>

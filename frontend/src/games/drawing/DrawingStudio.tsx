@@ -12,6 +12,7 @@ import {
   saveDrawing,
 } from './drawing.ts'
 import type { DrawingAction, Point, Stroke } from './drawing.ts'
+import { downloadDrawingPng } from '../exportArtwork.ts'
 
 const SIZES = [
   { label: 'Thin', value: 4 },
@@ -123,6 +124,19 @@ export default function DrawingStudio() {
           ))}
         </div>
         <div className="tool-buttons">
+          <button
+            type="button"
+            className="tool"
+            onClick={() => {
+              const canvas = canvasRef.current
+              if (canvas) downloadDrawingPng(canvas, 'little-minds-drawing.png')
+            }}
+          >
+            Download PNG
+          </button>
+          <button type="button" className="tool" onClick={() => window.print()}>
+            Print
+          </button>
           {SIZES.map((s) => (
             <button
               key={s.value}

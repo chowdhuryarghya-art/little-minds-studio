@@ -12,13 +12,13 @@ const TILES = [
 export default function Home() {
   return (
     <section className="page">
-      <h1 className="hero-title">What would you like to explore?</h1>
+      <h1 className="hero-title">Free games for kids ages 2–12</h1>
       <p className="center">
         <Link className="btn big" to="/kids">
           Start playing – pick your age
         </Link>
       </p>
-      <div className="tile-grid">
+      <div className="tile-grid home-tile-grid">
         {TILES.map((t) => (
           <Link key={t.to} to={t.to} className="tile" style={{ background: t.color }}>
             <strong>{t.title}</strong>

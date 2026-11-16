@@ -21,20 +21,34 @@ const QUESTIONS: Question[] = [
   { id: 'logic-5', prompt: 'Sam has 2 sisters. Each sister has 1 brother. How many brothers are there?', choices: ['1', '2', '3'], answer: '1', explanation: 'Both sisters share the same brother: Sam.' },
 ]
 
-function chooseQuestion(previousId?: string): Question {
-  const options = QUESTIONS.filter((question) => question.id !== previousId)
-  return options[Math.floor(Math.random() * options.length)]
+function shuffleQuestions(avoidFirstId?: string): Question[] {
+  const shuffled = [...QUESTIONS]
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(Math.random() * (index + 1))
+    ;[shuffled[index], shuffled[swap]] = [shuffled[swap], shuffled[index]]
+  }
+  if (shuffled.length > 1 && shuffled[0].id === avoidFirstId) {
+    ;[shuffled[0], shuffled[1]] = [shuffled[1], shuffled[0]]
+  }
+  return shuffled
 }
 
 export default function WhatComesNextGame() {
-  const [question, setQuestion] = useState(() => chooseQuestion())
+  const [questions, setQuestions] = useState(shuffleQuestions)
+  const [questionIndex, setQuestionIndex] = useState(0)
   const [answer, setAnswer] = useState<string | null>(null)
   const [score, setScore] = useState(0)
   const [answered, setAnswered] = useState(0)
 
+  const question = questions[questionIndex]
   const isCorrect = answer === question.answer
   const nextQuestion = () => {
-    setQuestion(chooseQuestion(question.id))
+    if (questionIndex + 1 < questions.length) {
+      setQuestionIndex((index) => index + 1)
+    } else {
+      setQuestions(shuffleQuestions(question.id))
+      setQuestionIndex(0)
+    }
     setAnswer(null)
   }
 

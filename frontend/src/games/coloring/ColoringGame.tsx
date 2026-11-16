@@ -1,9 +1,10 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import ColoringCanvas from './ColoringCanvas.tsx'
 import { PALETTE } from './palette.ts'
 import { coloringReducer, ERASER } from './coloringState.ts'
 import { loadFills, saveFills } from './storage.ts'
 import type { ColoringPage } from './types.ts'
+import { downloadColoringSvg } from '../exportArtwork.ts'
 
 interface Props {
   page: ColoringPage
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function ColoringGame({ page, persist = true }: Props) {
+  const gameRef = useRef<HTMLDivElement>(null)
   const [state, dispatch] = useReducer(coloringReducer, page, (p) => ({
     fills: persist ? loadFills(p) : {},
     history: [],
@@ -27,7 +29,7 @@ export default function ColoringGame({ page, persist = true }: Props) {
   const complete = paintedCount === page.regions.length
 
   return (
-    <div className="coloring-game">
+    <div className="coloring-game" ref={gameRef}>
       <div className="canvas-wrap">
         <ColoringCanvas
           page={page}
@@ -56,6 +58,19 @@ export default function ColoringGame({ page, persist = true }: Props) {
           ))}
         </div>
         <div className="tool-buttons">
+          <button
+            type="button"
+            className="tool"
+            onClick={() => {
+              const svg = gameRef.current?.querySelector('svg')
+              if (svg) downloadColoringSvg(svg, `${page.id}.svg`)
+            }}
+          >
+            Download SVG
+          </button>
+          <button type="button" className="tool" onClick={() => window.print()}>
+            Print
+          </button>
           <button
             type="button"
             className={`tool${color === ERASER ? ' selected' : ''}`}

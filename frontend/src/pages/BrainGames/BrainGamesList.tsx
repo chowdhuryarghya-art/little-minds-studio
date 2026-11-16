@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 export default function BrainGamesList() {
   return (
     <section className="page">
+      <p>
+        <Link className="back-link" to="/">
+          ← Home
+        </Link>
+      </p>
       <h1 className="hero-title">Brain Games</h1>
       <p className="center muted">Think ahead, spot patterns and give your brain a workout!</p>
       <div className="tile-grid">
@@ -38,7 +43,7 @@ export default function BrainGamesList() {
           <strong>🗝️ Maze With a Twist</strong>
           <span>Find a key to unlock the gate on your way to the star</span>
         </Link>
-        <Link to="/brain-games/what-comes-next" className="tile brain-tile" style={{ background: '#d9e7ff' }}>
+        <Link to="/brain-games/riddle-logic" className="tile brain-tile" style={{ background: '#d9e7ff' }}>
           <strong>🧠 Riddle &amp; Logic Challenge</strong>
           <span>Solve fun riddles, brain teasers, and logic questions</span>
         </Link>

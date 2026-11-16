@@ -3,7 +3,7 @@ import type { AgeGroupId } from '../../data/ageGroups.ts'
 import type { WordEntry, CuratedWord } from './englishTypes.ts'
 import { getRandomCuratedWord, getCuratedWordsByAge } from './wordBank.ts'
 import { fetchWordDefinition, speakWord } from './dictionaryApi.ts'
-import { checkEnglishSentence } from './languageToolApi.ts'
+import { checkEnglishSentence, isChildSafeSentence } from './languageToolApi.ts'
 import type { LanguageToolSuggestion } from './languageToolApi.ts'
 
 interface EnglishGameProps {
@@ -131,6 +131,14 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
   }
 
   const handleCheckSentence = async () => {
+    if (!isChildSafeSentence(userSentence)) {
+      setSentenceCheckError(
+        'For safety, use a short sentence made only from reviewed words and simple common words.',
+      )
+      setSentenceSuggestions([])
+      return
+    }
+
     sentenceCheckController.current?.abort()
     const controller = new AbortController()
     sentenceCheckController.current = controller
@@ -196,7 +204,7 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
           <input
             type="text"
             className="english-search-input"
-            placeholder="Type any English word (e.g. galaxy, happy, brave)..."
+            placeholder="Try a reviewed word (e.g. rainbow, puppy, happy)..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             aria-label="Search English Dictionary"

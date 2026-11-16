@@ -1,7 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { LETTER_WORD_BANKS } from '../../games/earlylearning/letterWordBanks.ts'
 import { StorybookIllustration } from '../../games/earlylearning/storyIllustrations.tsx'
 
 const LETTERS = [
@@ -32,10 +31,6 @@ const LETTERS = [
   { letter: 'Y', example: 'Yo-yo', image: '🪀' },
   { letter: 'Z', example: 'Zebra', image: '🦓' },
 ]
-const ALL_LETTER_WORDS = Object.entries(LETTER_WORD_BANKS).flatMap(([letter, words]) =>
-  words.map((word) => ({ letter, word })),
-)
-
 const STORIES = [
   {
     title: 'The Little Seed',
@@ -320,13 +315,11 @@ const ACTIVITY_TABS: { id: Activity; label: string }[] = [
 
 function LettersActivity() {
   const [index, setIndex] = useState(0)
-  const [wordIndex, setWordIndex] = useState(0)
-  const [wordDeck, setWordDeck] = useState(() => shuffled(LETTER_WORD_BANKS.A))
   const [picked, setPicked] = useState<string | null>(null)
   const [message, setMessage] = useState('')
   const [exampleRevealed, setExampleRevealed] = useState(false)
   const item = LETTERS[index]
-  const targetWord = wordDeck[wordIndex]
+  const targetWord = item.example
 
   const resetQuestion = () => {
     setPicked(null)
@@ -335,48 +328,34 @@ function LettersActivity() {
   }
 
   const nextLetter = () => {
-    const nextIndex = (index + 1) % LETTERS.length
-    const nextItem = LETTERS[nextIndex]
-    setIndex(nextIndex)
-    setWordDeck(shuffled(LETTER_WORD_BANKS[nextItem.letter]))
-    setWordIndex(0)
-    resetQuestion()
-  }
-
-  const nextWord = () => {
-    if (wordIndex + 1 < wordDeck.length) {
-      setWordIndex((current) => current + 1)
-    } else {
-      setWordDeck(shuffled(LETTER_WORD_BANKS[item.letter], targetWord))
-      setWordIndex(0)
-    }
+    setIndex((current) => (current + 1) % LETTERS.length)
     resetQuestion()
   }
 
   const speakLetter = () => {
     if (!('speechSynthesis' in window)) {
-      setMessage(`Say the letter ${item.letter}.`)
+      setMessage(`Say ${item.letter} for ${item.example}.`)
       return
     }
     window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(item.letter)
+    const utterance = new SpeechSynthesisUtterance(`${item.letter} for ${item.example}`)
     utterance.lang = 'en'
     window.speechSynthesis.speak(utterance)
-    setMessage(`Listen to the letter ${item.letter}.`)
+    setMessage(`Listen: ${item.letter} for ${item.example}.`)
   }
 
   const choices = useMemo(() => {
     const distractors = shuffled(
-      ALL_LETTER_WORDS.filter((entry) => entry.letter !== item.letter),
+      LETTERS.filter((entry) => entry.letter !== item.letter).map((entry) => entry.example),
     ).slice(0, 2)
-    return shuffled([targetWord, ...distractors.map((entry) => entry.word)])
+    return shuffled([targetWord, ...distractors])
   }, [item.letter, targetWord])
 
   return (
     <div className={`early-letters-layout${exampleRevealed ? ' has-revealed-example' : ''}`}>
       <div className="early-learning-card">
         <p className="center muted">
-          Letter {item.letter} · Word {wordIndex + 1} of {wordDeck.length}
+          Letter {index + 1} of {LETTERS.length}
         </p>
         <div className="early-learning-letter-row">
           <p className="early-learning-letter" aria-label={`Letter ${item.letter}`}>
@@ -394,10 +373,10 @@ function LettersActivity() {
           </button>
         </div>
         <p className="center">
-          <button type="button" className="tool" onClick={speakLetter}>🔊 Hear letter</button>
+          <button type="button" className="tool" onClick={speakLetter}>🔊 Hear letter and word</button>
         </p>
         <h2 className="center">Which word starts with the letter {item.letter}?</h2>
-        <div className="early-learning-choices">
+        <div className="early-learning-choices early-word-choices">
           {choices.map((choice) => (
             <button
               key={choice}
@@ -419,8 +398,7 @@ function LettersActivity() {
         )}
         {message && <p className="center muted" role="status">{message}</p>}
         <p className="center">
-          <button type="button" className="btn" onClick={nextWord}>Next word</button>{' '}
-          <button type="button" className="tool" onClick={nextLetter}>Next letter</button>
+          <button type="button" className="btn" onClick={nextLetter}>Next letter</button>
         </p>
       </div>
       {exampleRevealed && (

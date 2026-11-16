@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 export default function PuzzleList() {
   return (
     <section className="page">
+      <p>
+        <Link className="back-link" to="/">
+          ← Home
+        </Link>
+      </p>
       <h1 className="hero-title">Puzzle Games</h1>
       <div className="tile-grid three">
         <Link to="/puzzles/memory" className="tile" style={{ background: '#4cc9f0' }}>

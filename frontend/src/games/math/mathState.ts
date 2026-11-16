@@ -99,6 +99,11 @@ function numericQuestion(
   return { prompt, answer: String(answer), choices: numberChoices(answer, random, include) }
 }
 
+function unitQuestion(prompt: string, answer: number, unit: string, random: Random): Draft {
+  const choices = numberChoices(answer, random).map((choice) => `${choice} ${unit}`)
+  return { prompt, answer: `${answer} ${unit}`, choices }
+}
+
 function fractionChoices(answer: string, random: Random): string[] {
   const [answerNumerator, answerDenominator] = answer.split('/').map(Number)
   const alternatives = new Set<string>()
@@ -301,11 +306,12 @@ const GENERATORS: Record<Exclude<MathTopic, 'patterns' | 'number-sense'>, Genera
       const length = randInt(r, 3, 18)
       const width = r() < 0.5 ? length : randInt(r, 2, 12)
       const isSquare = length === width
-      return numericQuestion(
+      return unitQuestion(
         isSquare
           ? `What is the perimeter of a square with ${length} cm sides?`
           : `What is the perimeter of a ${length} cm by ${width} cm rectangle?`,
         2 * (length + width),
+        'cm',
         r,
       )
     }
@@ -322,9 +328,10 @@ const GENERATORS: Record<Exclude<MathTopic, 'patterns' | 'number-sense'>, Genera
     const length = randInt(r, 4, 20)
     const width = randInt(r, 3, 18)
     const area = r() < 0.5
-    return numericQuestion(
+    return unitQuestion(
       `A rectangle is ${length} cm long and ${width} cm wide. What is its ${area ? 'area' : 'perimeter'}?`,
       area ? length * width : 2 * (length + width),
+      area ? 'cm²' : 'cm',
       r,
     )
   },

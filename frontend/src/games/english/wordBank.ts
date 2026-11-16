@@ -628,15 +628,24 @@ export const CURATED_WORDS: CuratedWord[] = [
 ]
 
 export function getCuratedWordsByAge(age?: AgeGroupId): CuratedWord[] {
-  if (!age) return CURATED_WORDS
-  return CURATED_WORDS.filter((w) => w.ageGroup === age)
+  const safeWords = CURATED_WORDS.filter((word) => word.fallbackData)
+  if (!age) return safeWords
+  return safeWords.filter((word) => word.ageGroup === age)
+}
+
+export function findChildSafeEnglishWord(query: string): CuratedWord | undefined {
+  const normalized = query.trim().toLowerCase()
+  if (!normalized) return undefined
+  return CURATED_WORDS.find(
+    (word) => word.fallbackData && word.word.toLowerCase() === normalized,
+  )
 }
 
 export function getRandomCuratedWord(age?: AgeGroupId, excludeWord?: string): CuratedWord {
   const pool = getCuratedWordsByAge(age).filter(
     (w) => !excludeWord || w.word.toLowerCase() !== excludeWord.toLowerCase()
   )
-  const list = pool.length > 0 ? pool : CURATED_WORDS
+  const list = pool.length > 0 ? pool : getCuratedWordsByAge()
   const randomIndex = Math.floor(Math.random() * list.length)
   return list[randomIndex]
 }

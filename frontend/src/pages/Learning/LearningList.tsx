@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 export default function LearningList() {
   return (
     <section className="page">
+      <p>
+        <Link className="back-link" to="/">
+          ← Home
+        </Link>
+      </p>
       <h1 className="hero-title">Learning Zone</h1>
       <div className="tile-grid three">
         <Link to="/learning/early-years" className="tile" style={{ background: '#ffe6ad' }}>
