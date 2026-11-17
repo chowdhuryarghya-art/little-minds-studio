@@ -1,5 +1,6 @@
 import type { AgeGroupId } from '../../data/ageGroups.ts'
 import type { BengaliWordEntry } from './bengaliTypes.ts'
+import { containsBlockedWord } from '../safety/wordSafety.ts'
 
 export const BENGALI_WORDS: BengaliWordEntry[] = [
   // Little Explorers (Ages 2-5)
@@ -253,8 +254,9 @@ export const BENGALI_WORDS: BengaliWordEntry[] = [
 ]
 
 export function getBengaliWordsByAge(age?: AgeGroupId): BengaliWordEntry[] {
-  if (!age) return BENGALI_WORDS
-  return BENGALI_WORDS.filter((w) => w.ageGroup === age)
+  return BENGALI_WORDS.filter(
+    (word) => !containsBlockedWord(word.word, 'bengali') && (!age || word.ageGroup === age),
+  )
 }
 
 export function findBengaliWord(query: string): BengaliWordEntry | undefined {
@@ -270,7 +272,7 @@ export function findBengaliWord(query: string): BengaliWordEntry | undefined {
 
 export function getRandomBengaliWord(age?: AgeGroupId, excludeWord?: string): BengaliWordEntry {
   const pool = getBengaliWordsByAge(age).filter((w) => !excludeWord || w.word !== excludeWord)
-  const list = pool.length > 0 ? pool : BENGALI_WORDS
+  const list = pool.length > 0 ? pool : getBengaliWordsByAge()
   const randomIndex = Math.floor(Math.random() * list.length)
   return list[randomIndex]
 }

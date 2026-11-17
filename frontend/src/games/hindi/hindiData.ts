@@ -1,5 +1,6 @@
 import type { AgeGroupId } from '../../data/ageGroups.ts'
 import type { HindiWordEntry } from './hindiTypes.ts'
+import { containsBlockedWord } from '../safety/wordSafety.ts'
 
 export const HINDI_WORDS: HindiWordEntry[] = [
   // Little Explorers (Ages 2-5)
@@ -297,8 +298,9 @@ export const HINDI_WORDS: HindiWordEntry[] = [
 ]
 
 export function getHindiWordsByAge(age?: AgeGroupId): HindiWordEntry[] {
-  if (!age) return HINDI_WORDS
-  return HINDI_WORDS.filter((w) => w.ageGroup === age)
+  return HINDI_WORDS.filter(
+    (word) => !containsBlockedWord(word.word, 'hindi') && (!age || word.ageGroup === age),
+  )
 }
 
 export function findHindiWord(query: string): HindiWordEntry | undefined {
@@ -316,7 +318,7 @@ export function getRandomHindiWord(age?: AgeGroupId, excludeWord?: string): Hind
   const pool = getHindiWordsByAge(age).filter(
     (w) => !excludeWord || w.word !== excludeWord
   )
-  const list = pool.length > 0 ? pool : HINDI_WORDS
+  const list = pool.length > 0 ? pool : getHindiWordsByAge()
   const randomIndex = Math.floor(Math.random() * list.length)
   return list[randomIndex]
 }

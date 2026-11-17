@@ -12,7 +12,7 @@ export interface BengaliWordEntry {
   romanized: string // e.g. "Rongdhonu"
   englishMeaning: string // e.g. "Rainbow"
   bengaliDefinition: string // e.g. "বৃষ্টির পর আকাশে সূর্যের আলোয় ফুটে ওঠা সাতটি রঙের ধনুকাকার রেখা।"
-  partOfSpeech: BengaliPartOfSpeech
+  partOfSpeech: BengaliPartOfSpeech | string
   synonyms: Array<{ word: string; romanized: string }> // সমার্থক শব্দ
   antonyms?: Array<{ word: string; romanized: string }> // বিপরীতার্থক শব্দ
   exampleSentence: {
@@ -22,6 +22,8 @@ export interface BengaliWordEntry {
   }
   originOrContext?: string
   funFact?: string
-  ageGroup: AgeGroupId
+  ageGroup?: AgeGroupId
   category: string
+  dictionaryExtract?: string
+  sourceUrl?: string
 }

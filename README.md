@@ -10,9 +10,9 @@ Little Minds Studio is a free learning and creativity website for children ages 
 - **Early Learning (ages 2–5):** shuffled first-letter word matching, number names and recognition from 1–100, read-along stories with sentence-matched illustrated scenes, object-counting and feelings rounds that shuffle without repeating until their set is used, and pre-writing tracing.
 - **Science Explorer:** Five topics (animals, plants, space, the human body, and Earth), with 15 questions per topic, Easy/Medium/Hard levels, short learning cards, and explanations.
 - **Brain Games:** Chess Practice, Sudoku, Word Builder, Cosmic Clue Hunt (4×4, 5×5, and 6×6 levels), Codebreaker, Pattern Detective, Maze With a Twist, Riddle & Logic Challenge, Little Thinkers, and Logic Lab.
-- **Language practice:** Word searches, sample sentences, and speech playback. English Word Builder can request writing suggestions from LanguageTool; it does not score or grade user-written sentences.
+- **Language practice:** Word searches, sample sentences, and speech playback. Word Explorer checks English, Hindi, and Bengali search terms against the local starter blocklists in `frontend/src/games/safety/profanity/` before querying DictionaryAPI.dev (English) or Wiktionary (Hindi/Bengali). These lists are not exhaustive, and external dictionary entries are not reviewed for age suitability.
 
-Some language word lookups, Bengali speech playback, and English sentence suggestions use third-party online services. Sentence text is sent to LanguageTool only when the user requests suggestions. Coloring progress and drawings are stored in the browser on the device. The Privacy Policy is a draft and needs legal review before public launch.
+Word Explorer search terms are sent to the corresponding dictionary provider after the local blocklist check. Bengali speech playback and English sentence suggestions also use third-party online services; sentence text is sent to LanguageTool only when the user requests suggestions. Coloring progress and drawings are stored in the browser on the device. The Privacy Policy is a draft and needs legal review before public launch.
 
 ## Development
 

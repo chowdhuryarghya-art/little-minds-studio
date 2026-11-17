@@ -222,6 +222,9 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
           🎲 Surprise Word!
         </button>
       </div>
+      <p className="center muted">
+        Searches are sent to DictionaryAPI.dev. Dictionary results are not reviewed for age suitability.
+      </p>
 
       {/* Suggested Quick Word Chips */}
       <div className="english-quick-words" aria-label="Curated word suggestions">
@@ -247,7 +250,7 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
       ) : errorMsg ? (
         <div className="english-error-card">
           <span className="english-error-icon">📖</span>
-          <h3>Word Not Found</h3>
+          <h3>Word Unavailable</h3>
           <p>{errorMsg}</p>
           <div className="english-error-actions">
             <button type="button" className="btn" onClick={handlePickRandomWord}>
@@ -448,6 +451,28 @@ export default function EnglishGame({ initialAge, initialWord }: EnglishGameProp
                   <p>{wordData.funFact}</p>
                 </div>
               )}
+            </footer>
+          )}
+
+          {(wordData.sourceUrls?.length || wordData.license) && (
+            <footer className="english-extra-insights">
+              <p>
+                Dictionary source:{' '}
+                {wordData.sourceUrls?.map((sourceUrl, index) => (
+                  <span key={sourceUrl}>
+                    {index > 0 && ', '}
+                    <a href={sourceUrl} target="_blank" rel="noreferrer">source {index + 1}</a>
+                  </span>
+                ))}
+                {wordData.license && (
+                  <>
+                    {' · '}License:{' '}
+                    <a href={wordData.license.url} target="_blank" rel="noreferrer">
+                      {wordData.license.name}
+                    </a>
+                  </>
+                )}
+              </p>
             </footer>
           )}
         </article>

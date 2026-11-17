@@ -28,6 +28,11 @@ export interface WordEntry {
   funFact?: string
   ageGroup?: AgeGroupId
   category?: string
+  sourceUrls?: string[]
+  license?: {
+    name: string
+    url: string
+  }
 }
 
 export interface CuratedWord {

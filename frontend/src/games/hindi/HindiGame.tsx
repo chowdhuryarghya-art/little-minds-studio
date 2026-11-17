@@ -140,6 +140,9 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
           🎲 नया शब्द! (Surprise Word)
         </button>
       </div>
+      <p className="center muted">
+        खोजे गए शब्द Wiktionary को भेजे जाते हैं। शब्दकोश की सामग्री आयु के अनुसार जाँची हुई नहीं है।
+      </p>
 
       {/* On-Screen Search Keyboard */}
       {showSearchKeyboard && (
@@ -178,7 +181,7 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
       ) : searchError ? (
         <div className="english-error-card">
           <span className="english-error-icon">📖</span>
-          <h3>शब्द नहीं मिला (Word Not Found)</h3>
+          <h3>शब्द उपलब्ध नहीं (Word Unavailable)</h3>
           <p>{searchError}</p>
           <div className="english-error-actions">
             <button type="button" className="btn" onClick={handlePickRandomWord}>
@@ -193,8 +196,12 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
               <h2 className="english-word-heading indic-font hindi-main-word">
                 {currentWordEntry.word}
               </h2>
-              <span className="english-phonetic">/{currentWordEntry.romanized}/</span>
-              <span className="indic-english-tag">({currentWordEntry.englishMeaning})</span>
+              {currentWordEntry.romanized && (
+                <span className="english-phonetic">/{currentWordEntry.romanized}/</span>
+              )}
+              {currentWordEntry.englishMeaning && (
+                <span className="indic-english-tag">({currentWordEntry.englishMeaning})</span>
+              )}
             </div>
 
             <div className="english-header-actions">
@@ -227,26 +234,34 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
 
             <div className="indic-definition-box">
               <p className="indic-def-text indic-font">{currentWordEntry.hindiDefinition}</p>
-              <p className="indic-meaning-english">
-                Meaning: <strong>{currentWordEntry.englishMeaning}</strong>
-              </p>
+              {currentWordEntry.englishMeaning && (
+                <p className="indic-meaning-english">
+                  Meaning: <strong>{currentWordEntry.englishMeaning}</strong>
+                </p>
+              )}
             </div>
 
             {/* Example Sentences */}
+            {currentWordEntry.exampleSentence.hindi && (
             <div className="indic-example-section">
               <h4 className="indic-subheading">उदाहरण वाक्य (Example Sentence):</h4>
               <blockquote className="english-example-quote indic-example-box">
                 <p className="indic-example-hindi indic-font">
                   “{currentWordEntry.exampleSentence.hindi}”
                 </p>
-                <p className="indic-example-romanized">
-                  <em>/{currentWordEntry.exampleSentence.romanized}/</em>
-                </p>
-                <p className="indic-example-trans">
-                  Translation: {currentWordEntry.exampleSentence.english}
-                </p>
+                {currentWordEntry.exampleSentence.romanized && (
+                  <p className="indic-example-romanized">
+                    <em>/{currentWordEntry.exampleSentence.romanized}/</em>
+                  </p>
+                )}
+                {currentWordEntry.exampleSentence.english && (
+                  <p className="indic-example-trans">
+                    Translation: {currentWordEntry.exampleSentence.english}
+                  </p>
+                )}
               </blockquote>
             </div>
+            )}
 
             {/* Synonyms & Antonyms */}
             <div className="indic-relations-grid">
@@ -313,6 +328,17 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
                 )}
               </footer>
             )}
+            {currentWordEntry.dictionaryExtract && currentWordEntry.sourceUrl && (
+              <p className="indic-meaning-english">
+                Dictionary source:{' '}
+                <a href={currentWordEntry.sourceUrl} target="_blank" rel="noreferrer">Wiktionary</a>
+                {' '}(
+                <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">
+                  CC BY-SA 4.0
+                </a>
+                )
+              </p>
+            )}
           </div>
         </article>
       )}
@@ -334,7 +360,9 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
               <textarea
                 className="sentence-textarea indic-font"
                 rows={3}
-                placeholder={`उदा. "${currentWordEntry.exampleSentence.hindi}" लिखें...`}
+                placeholder={currentWordEntry.exampleSentence.hindi
+                  ? `उदा. "${currentWordEntry.exampleSentence.hindi}" लिखें...`
+                  : `“${currentWordEntry.word}” शब्द का उपयोग करके वाक्य लिखें...`}
                 value={userSentence}
                 onChange={(e) => setUserSentence(e.target.value)}
                 aria-label={`Write a Hindi sentence using ${currentWordEntry.word}`}
@@ -361,13 +389,15 @@ export default function HindiGame({ initialAge, initialWord }: HindiGameProps) {
                 </button>
               )}
 
-              <button
-                type="button"
-                className="btn btn-secondary btn-sample-sentence"
-                onClick={handleInsertSampleSentence}
-              >
-                💡 उदाहरण वाक्य देखें (Sample Sentence)
-              </button>
+              {currentWordEntry.exampleSentence.hindi && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sample-sentence"
+                  onClick={handleInsertSampleSentence}
+                >
+                  💡 उदाहरण वाक्य देखें (Sample Sentence)
+                </button>
+              )}
             </div>
 
             {/* Sentence Builder Virtual Keyboard */}

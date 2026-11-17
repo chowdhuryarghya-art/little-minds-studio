@@ -1,5 +1,6 @@
 import type { AgeGroupId } from '../../data/ageGroups.ts'
 import type { CuratedWord } from './englishTypes.ts'
+import { containsBlockedWord } from '../safety/wordSafety.ts'
 
 export const CURATED_WORDS: CuratedWord[] = [
   // Little Explorers (Ages 2-5)
@@ -628,7 +629,9 @@ export const CURATED_WORDS: CuratedWord[] = [
 ]
 
 export function getCuratedWordsByAge(age?: AgeGroupId): CuratedWord[] {
-  const safeWords = CURATED_WORDS.filter((word) => word.fallbackData)
+  const safeWords = CURATED_WORDS.filter(
+    (word) => word.fallbackData && !containsBlockedWord(word.word, 'english'),
+  )
   if (!age) return safeWords
   return safeWords.filter((word) => word.ageGroup === age)
 }
@@ -637,7 +640,9 @@ export function findChildSafeEnglishWord(query: string): CuratedWord | undefined
   const normalized = query.trim().toLowerCase()
   if (!normalized) return undefined
   return CURATED_WORDS.find(
-    (word) => word.fallbackData && word.word.toLowerCase() === normalized,
+    (word) => word.fallbackData
+      && !containsBlockedWord(word.word, 'english')
+      && word.word.toLowerCase() === normalized,
   )
 }
 

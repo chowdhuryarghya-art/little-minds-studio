@@ -164,6 +164,9 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
           🎲 নতুন শব্দ! (Surprise Word)
         </button>
       </div>
+      <p className="center muted">
+        অনুসন্ধানের শব্দ Wiktionary-তে পাঠানো হয়। অভিধানের বিষয়বস্তু বয়স-উপযোগী হিসেবে পর্যালোচিত নয়।
+      </p>
 
       {/* On-Screen Search Keyboard */}
       {showSearchKeyboard && (
@@ -202,7 +205,7 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
       ) : searchError ? (
         <div className="english-error-card">
           <span className="english-error-icon">📖</span>
-          <h3>শব্দ পাওয়া যায়নি (Word Not Found)</h3>
+          <h3>শব্দটি উপলব্ধ নয় (Word Unavailable)</h3>
           <p>{searchError}</p>
           <div className="english-error-actions">
             <button type="button" className="btn" onClick={handlePickRandomWord}>
@@ -217,8 +220,12 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
               <h2 className="english-word-heading indic-font bengali-main-word">
                 {currentWordEntry.word}
               </h2>
-              <span className="english-phonetic">/{currentWordEntry.romanized}/</span>
-              <span className="indic-english-tag">({currentWordEntry.englishMeaning})</span>
+              {currentWordEntry.romanized && (
+                <span className="english-phonetic">/{currentWordEntry.romanized}/</span>
+              )}
+              {currentWordEntry.englishMeaning && (
+                <span className="indic-english-tag">({currentWordEntry.englishMeaning})</span>
+              )}
             </div>
 
             <div className="english-header-actions">
@@ -252,26 +259,34 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
 
             <div className="indic-definition-box">
               <p className="indic-def-text indic-font">{currentWordEntry.bengaliDefinition}</p>
-              <p className="indic-meaning-english">
-                Meaning: <strong>{currentWordEntry.englishMeaning}</strong>
-              </p>
+              {currentWordEntry.englishMeaning && (
+                <p className="indic-meaning-english">
+                  Meaning: <strong>{currentWordEntry.englishMeaning}</strong>
+                </p>
+              )}
             </div>
 
             {/* Example Sentences */}
+            {currentWordEntry.exampleSentence.bengali && (
             <div className="indic-example-section">
               <h4 className="indic-subheading">উদাহরণ বাক্য (Example Sentence):</h4>
               <blockquote className="english-example-quote indic-example-box">
                 <p className="indic-example-hindi indic-font">
                   “{currentWordEntry.exampleSentence.bengali}”
                 </p>
-                <p className="indic-example-romanized">
-                  <em>/{currentWordEntry.exampleSentence.romanized}/</em>
-                </p>
-                <p className="indic-example-trans">
-                  Translation: {currentWordEntry.exampleSentence.english}
-                </p>
+                {currentWordEntry.exampleSentence.romanized && (
+                  <p className="indic-example-romanized">
+                    <em>/{currentWordEntry.exampleSentence.romanized}/</em>
+                  </p>
+                )}
+                {currentWordEntry.exampleSentence.english && (
+                  <p className="indic-example-trans">
+                    Translation: {currentWordEntry.exampleSentence.english}
+                  </p>
+                )}
               </blockquote>
             </div>
+            )}
 
             {/* Synonyms & Antonyms */}
             <div className="indic-relations-grid">
@@ -338,6 +353,17 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
                 )}
               </footer>
             )}
+            {currentWordEntry.dictionaryExtract && currentWordEntry.sourceUrl && (
+              <p className="indic-meaning-english">
+                Dictionary source:{' '}
+                <a href={currentWordEntry.sourceUrl} target="_blank" rel="noreferrer">Wiktionary</a>
+                {' '}(
+                <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">
+                  CC BY-SA 4.0
+                </a>
+                )
+              </p>
+            )}
           </div>
         </article>
       )}
@@ -359,7 +385,9 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
               <textarea
                 className="sentence-textarea indic-font"
                 rows={3}
-                placeholder={`যেমন: "${currentWordEntry.exampleSentence.bengali}" লিখুন...`}
+                placeholder={currentWordEntry.exampleSentence.bengali
+                  ? `যেমন: "${currentWordEntry.exampleSentence.bengali}" লিখুন...`
+                  : `"${currentWordEntry.word}" শব্দটি ব্যবহার করে বাক্য লিখুন...`}
                 value={userSentence}
                 onChange={(e) => {
                   setUserSentence(e.target.value)
@@ -389,13 +417,15 @@ export default function BengaliGame({ initialAge, initialWord }: BengaliGameProp
                 </button>
               )}
 
-              <button
-                type="button"
-                className="btn btn-secondary btn-sample-sentence"
-                onClick={handleInsertSampleSentence}
-              >
-                💡 উদাহরণ বাক্য দেখুন (Sample Sentence)
-              </button>
+              {currentWordEntry.exampleSentence.bengali && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sample-sentence"
+                  onClick={handleInsertSampleSentence}
+                >
+                  💡 উদাহরণ বাক্য দেখুন (Sample Sentence)
+                </button>
+              )}
             </div>
             {/* Sentence Builder Virtual Keyboard */}
             {showSentenceKeyboard && (

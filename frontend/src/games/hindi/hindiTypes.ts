@@ -12,7 +12,7 @@ export interface HindiWordEntry {
   romanized: string // e.g. "Indradhanush"
   englishMeaning: string // e.g. "Rainbow"
   hindiDefinition: string // e.g. "बारिश के बाद आकाश में दिखाई देने वाला सात रंगों का धनुष"
-  partOfSpeech: HindiPartOfSpeech
+  partOfSpeech: HindiPartOfSpeech | string
   synonyms: Array<{ word: string; romanized: string }> // समानार्थी
   antonyms?: Array<{ word: string; romanized: string }> // विलोम
   exampleSentence: {
@@ -22,6 +22,8 @@ export interface HindiWordEntry {
   }
   originOrContext?: string
   funFact?: string
-  ageGroup: AgeGroupId
+  ageGroup?: AgeGroupId
   category: string
+  dictionaryExtract?: string
+  sourceUrl?: string
 }
